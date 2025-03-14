@@ -42,7 +42,7 @@ class AgencyController extends FrontendController
         ProvinceRepository $provinceRepository,
         ConstructService $constructService,
 
-    ){
+    ) {
         $this->agencyService = $agencyService;
         $this->customerService = $customerService;
         $this->constructService = $constructService;
@@ -53,15 +53,15 @@ class AgencyController extends FrontendController
         $this->sourceRepository = $sourceRepository;
 
         parent::__construct();
-    
     }
 
-    public function profile(){
+    public function profile()
+    {
         $agency = Auth::guard('agency')->user();
-    
+
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý tài khoản khách hàng'.$agency['name'],
+            'meta_title' => 'Trang quản lý tài khoản khách hàng' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -74,19 +74,21 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function updateProfile(EditProfileAgencyRequest $request){
-        $agencyId =  Auth::guard('agency')->user()->id;       
-        if($this->agencyService->update($agencyId, $request)){
-            return redirect()->route('agency.profile')->with('success','Thêm mới bản ghi thành công');
+    public function updateProfile(EditProfileAgencyRequest $request)
+    {
+        $agencyId =  Auth::guard('agency')->user()->id;
+        if ($this->agencyService->update($agencyId, $request)) {
+            return redirect()->route('agency.profile')->with('success', 'Thêm mới bản ghi thành công');
         }
-        return redirect()->route('agency.profile')->with('error','Thêm mới bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('agency.profile')->with('error', 'Thêm mới bản ghi không thành công. Hãy thử lại');
     }
 
-    public function passwordForgot(){
+    public function passwordForgot()
+    {
         $agency = Auth::guard('agency')->user();
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang thay đổi mật khẩu'.$agency['name'],
+            'meta_title' => 'Trang thay đổi mật khẩu' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -99,7 +101,8 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function recovery(RecoverAgencyPasswordRequest $request){
+    public function recovery(RecoverAgencyPasswordRequest $request)
+    {
         $agency = Auth::guard('agency')->user();
 
         if (!Hash::check($request->password, $agency->password)) {
@@ -112,7 +115,8 @@ class AgencyController extends FrontendController
         return redirect()->route('agency.profile')->with('success', 'Mật khẩu đã được thay đổi thành công.');
     }
 
-    public function construction(Request $request){
+    public function construction(Request $request)
+    {
         $agency = Auth::guard('agency')->User();
         $condition = [
             'keyword' => $request->input('keyword'),
@@ -121,13 +125,13 @@ class AgencyController extends FrontendController
         $constructs = $this->constructRepository->findConstructByAgency($agency->id, $condition);
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$agency['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
             'canonical' => route('agency.profile')
         ];
-    
+
         return view('frontend.auth.agency.construction', compact(
             'seo',
             'system',
@@ -136,7 +140,8 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function customer(Request $request){
+    public function customer(Request $request)
+    {
         $agency = Auth::guard('agency')->User();
         $condition = [
             'keyword' => $request->input('keyword'),
@@ -147,7 +152,7 @@ class AgencyController extends FrontendController
         $customers = $this->customerRepository->getCustomer($customer_id, $condition);
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$agency['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -161,11 +166,12 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function createConstruction(){
+    public function createConstruction()
+    {
         $agency = Auth::guard('agency')->User();
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$agency['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -178,7 +184,7 @@ class AgencyController extends FrontendController
         $customer_id = convertArray($constructs);
         $customers = convertToIdNameArray($this->customerRepository->getCustomer($customer_id));
         $provinces =  $this->provinceRepository->all();
-        return view('frontend.auth.agency.storeConstruction',compact(
+        return view('frontend.auth.agency.storeConstruction', compact(
             'customers',
             'provinces',
             'system',
@@ -187,19 +193,21 @@ class AgencyController extends FrontendController
             'config'
         ));
     }
-    
-    public function storeConstruction(StoreConstructRequest $request){
-        if($this->constructService->create($request)){
-            return redirect()->route('agency.profile')->with('success','Thêm mới bản ghi thành công');
+
+    public function storeConstruction(StoreConstructRequest $request)
+    {
+        if ($this->constructService->create($request)) {
+            return redirect()->route('agency.profile')->with('success', 'Thêm mới bản ghi thành công');
         }
-        return redirect()->route('construction.create')->with('error','Thêm mới bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('construction.create')->with('error', 'Thêm mới bản ghi không thành công. Hãy thử lại');
     }
 
-    public function editConstruction($id){
+    public function editConstruction($id)
+    {
         $agency = Auth::guard('agency')->User();
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$agency['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -207,7 +215,7 @@ class AgencyController extends FrontendController
         ];
         $config = $this->configData();
         $config['method'] = 'edit';
-        $construct = $this->constructRepository->findById($id, ['*'], ['products' => function($query){
+        $construct = $this->constructRepository->findById($id, ['*'], ['products' => function ($query) {
             $query->with(['languages']);
         }]);
         $provinces = $this->provinceRepository->all();
@@ -215,7 +223,7 @@ class AgencyController extends FrontendController
         $customers = convertToIdNameArray($this->customerRepository->getCustomer($customer_id));
         $productConstruction = $this->constructService->productConstruction($construct->products);
 
-        return view('frontend.auth.agency.storeConstruction',compact(
+        return view('frontend.auth.agency.storeConstruction', compact(
             'system',
             'agency',
             'seo',
@@ -227,17 +235,19 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function updateConstruction($id, UpdateConstructRequest $request){
-        if($this->constructService->update($id,$request)){
-            return redirect()->route('agency.construction')->with('success','Cập nhật bản ghi thành công');
+    public function updateConstruction($id, UpdateConstructRequest $request)
+    {
+        if ($this->constructService->update($id, $request)) {
+            return redirect()->route('agency.construction')->with('success', 'Cập nhật bản ghi thành công');
         }
-        return redirect()->route('agency.construction')->with('error','Cập nhật bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('agency.construction')->with('error', 'Cập nhật bản ghi không thành công. Hãy thử lại');
     }
 
-    public function deleteConstruction($id){
+    public function deleteConstruction($id)
+    {
         $agency = Auth::guard('agency')->User();
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$agency['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -254,18 +264,20 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function destroyConstruction($id){
-        if($this->constructService->destroy($id)){
-            return redirect()->route('agency.construction')->with('success','Xóa bản ghi thành công');
+    public function destroyConstruction($id)
+    {
+        if ($this->constructService->destroy($id)) {
+            return redirect()->route('agency.construction')->with('success', 'Xóa bản ghi thành công');
         }
-        return redirect()->route('agency.construction')->with('error','Xóa bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('agency.construction')->with('error', 'Xóa bản ghi không thành công. Hãy thử lại');
     }
 
-    public function createCustomer(){
+    public function createCustomer()
+    {
         $agency = Auth::guard('agency')->User();
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$agency['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -275,7 +287,7 @@ class AgencyController extends FrontendController
         $customerCatalogues = $this->customerCatalogueRepository->all();
         $sources = $this->sourceRepository->all();
         $provinces =  $this->provinceRepository->all();
-        return view('frontend.auth.agency.createCustomer',compact(
+        return view('frontend.auth.agency.createCustomer', compact(
             'customerCatalogues',
             'provinces',
             'system',
@@ -286,20 +298,22 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function storeCustomer(StoreCustomerRequest $request){
-        if($this->customerService->create($request)){
-            return redirect()->route('agency.profile')->with('success','Thêm mới bản ghi thành công');
+    public function storeCustomer(StoreCustomerRequest $request)
+    {
+        if ($this->customerService->create($request)) {
+            return redirect()->route('agency.profile')->with('success', 'Thêm mới bản ghi thành công');
         }
-        return redirect()->route('customer.create')->with('error','Thêm mới bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('customer.create')->with('error', 'Thêm mới bản ghi không thành công. Hãy thử lại');
     }
 
-    public function constructionProduct($id){
+    public function constructionProduct($id)
+    {
         $agency = Auth::guard('agency')->user();
 
         $construction = $this->constructRepository->findById($id, ['*'], ['products']);
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Chi tiết sản phẩm công trình '.$construction->name.' của '.$agency['name'],
+            'meta_title' => 'Chi tiết sản phẩm công trình ' . $construction->name . ' của ' . $agency['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -313,9 +327,10 @@ class AgencyController extends FrontendController
         ));
     }
 
-    public function warranty(Request $request){
+    public function warranty(Request $request)
+    {
         $agency = Auth::guard('agency')->user();
-        
+
 
         $condition = [
             'keyword' => $request->input('keyword'),
@@ -323,7 +338,7 @@ class AgencyController extends FrontendController
         ];
 
         $warranty = $this->constructRepository->warrantyAgency($agency->id, $condition);
-         
+
 
         $system = $this->system;
         $seo = [
@@ -341,13 +356,15 @@ class AgencyController extends FrontendController
         ));
     }
 
-    
-    public function logout(){
+
+    public function logout()
+    {
         Auth::guard('agency')->logout();
         return redirect()->route('home.index')->with('success', 'Bạn đã đăng xuất khỏi hệ thống.');
     }
 
-    private function configData(){
+    private function configData()
+    {
         return [
             'css' => [
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css',
@@ -360,5 +377,4 @@ class AgencyController extends FrontendController
             ]
         ];
     }
-    
 }

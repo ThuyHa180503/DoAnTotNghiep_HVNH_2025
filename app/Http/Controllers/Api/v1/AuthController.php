@@ -11,11 +11,10 @@ use Illuminate\Support\Carbon;
 
 class AuthController extends Controller
 {
-    public function __construct(){
+    public function __construct() {}
 
-    }
-    
-    public function login(AuthRequest $request){
+    public function login(AuthRequest $request)
+    {
         $credentials = [
             'email' => $request->input('email'),
             'password' => $request->input('password')
@@ -35,6 +34,4 @@ class AuthController extends Controller
             'access_token' => $tokenResult->plainTextToken,
         ], 200);
     }
-
-
 }

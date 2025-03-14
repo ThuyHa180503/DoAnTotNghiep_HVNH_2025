@@ -31,25 +31,26 @@ class ProductController extends FrontendController
         ProductRepository $productRepository,
         ReviewRepository $reviewRepository,
         WidgetService $widgetService,
-    ){
+    ) {
         $this->productCatalogueRepository = $productCatalogueRepository;
         $this->productCatalogueService = $productCatalogueService;
         $this->productService = $productService;
         $this->productRepository = $productRepository;
         $this->reviewRepository = $reviewRepository;
         $this->widgetService = $widgetService;
-        parent::__construct(); 
+        parent::__construct();
     }
 
 
-    public function index($id, $request){
+    public function index($id, $request)
+    {
         $language = $this->language;
         $product = $this->productRepository->getProductById($id, $this->language, config('apps.general.defaultPublish'));
-        if(is_null($product)){
+        if (is_null($product)) {
             abort(404);
         }
         $product = $this->productService->combineProductAndPromotion([$id], $product, true);
-        
+
 
         $productCatalogue = $this->productCatalogueRepository->getProductCatalogueById($product->product_catalogue_id, $this->language);
         $breadcrumb = $this->productCatalogueRepository->breadcrumb($productCatalogue, $this->language);
@@ -57,7 +58,7 @@ class ProductController extends FrontendController
         $product = $this->productService->getAttribute($product, $this->language);
         $category = recursive(
             $this->productCatalogueRepository->all([
-                'languages' => function($query) use ($language){
+                'languages' => function ($query) use ($language) {
                     $query->where('language_id', $language);
                 }
             ], categorySelectRaw('product'))
@@ -70,7 +71,7 @@ class ProductController extends FrontendController
             // ['keyword' => 'homepage-customer', 'children' => true],
             // ['keyword' => 'category-highlight'],
             // ['keyword' => 'product', 'children' => true, 'promotion' => TRUE, 'object' => TRUE],
-            ['keyword' => 'products-hl','promotion' => true],
+            ['keyword' => 'products-hl', 'promotion' => true],
             // ['keyword' => 'home-intro'],
             // ['keyword' => 'home-project', 'object' => true],
             // ['keyword' => 'home-video', 'object' => true],
@@ -79,7 +80,7 @@ class ProductController extends FrontendController
         ], $this->language);
 
 
-       
+
 
 
         $productSeen = [
@@ -95,7 +96,7 @@ class ProductController extends FrontendController
 
         // Cart::instance('seen')->destroy();
 
-        
+
         Cart::instance('seen')->add($productSeen);
 
         $cartSeen = Cart::instance('seen')->content();
@@ -119,7 +120,8 @@ class ProductController extends FrontendController
         ));
     }
 
-    private function config(){
+    private function config()
+    {
         return [
             'language' => $this->language,
             'js' => [
@@ -132,5 +134,4 @@ class ProductController extends FrontendController
             ]
         ];
     }
-
 }

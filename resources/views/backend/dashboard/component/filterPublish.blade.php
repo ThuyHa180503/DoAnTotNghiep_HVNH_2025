@@ -1,5 +1,5 @@
 @php
-    $publish = request('publish') ?: old('publish');
+$publish = request('publish') ?: old('publish');
 @endphp
 <select name="publish" class="form-control setupSelect2 ml10">
     @foreach(__('messages.publish') as $key => $val)

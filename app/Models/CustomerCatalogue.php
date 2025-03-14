@@ -15,6 +15,9 @@ class CustomerCatalogue extends Model
         'name',
         'description',
         'publish',
+        'percent',
+        'money_condition',
+        'quantity_condition',
     ];
 
     protected $table = 'customer_catalogues';
@@ -24,7 +27,8 @@ class CustomerCatalogue extends Model
         return $this->hasMany(Customer::class, 'customer_catalogue_id', 'id');
     }
 
-    public function permissions(){
-        return  $this->belongsToMany(Permission::class, 'customer_catalogue_permission' , 'customer_catalogue_id', 'permission_id');
+    public function permissions()
+    {
+        return  $this->belongsToMany(Permission::class, 'customer_catalogue_permission', 'customer_catalogue_id', 'permission_id');
     }
 }

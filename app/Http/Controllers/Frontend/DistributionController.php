@@ -21,25 +21,26 @@ class DistributionController extends FrontendController
         DistributionService $distributionService,
         DistributionRepository $distributionRepository,
         ProvinceRepository $provinceRepository,
-    ){
+    ) {
         $this->distributionService = $distributionService;
         $this->distributionRepository = $distributionRepository;
         $this->provinceRepository = $provinceRepository;
-        parent::__construct(); 
+        parent::__construct();
     }
 
 
-    public function index(Request $request){
-       
+    public function index(Request $request)
+    {
+
         $distributions = $this->distributionRepository->all();
 
         $provinces = $this->provinceRepository->all();
-       
+
         $config = $this->config();
         $system = $this->system;
         $seo = [
             'meta_title' => 'Hệ thống phân phối',
-            'meta_description' => 'Hệ thống phân phối của '.$system['homepage_company'],
+            'meta_description' => 'Hệ thống phân phối của ' . $system['homepage_company'],
             'meta_keyword' => '',
             'meta_image' => '',
             'canonical' => write_url('he-thong-phan-phoi')
@@ -53,7 +54,8 @@ class DistributionController extends FrontendController
         ));
     }
 
-    private function config(){
+    private function config()
+    {
         return [
             'language' => $this->language,
             'css' => [
@@ -66,5 +68,4 @@ class DistributionController extends FrontendController
             ]
         ];
     }
-
 }

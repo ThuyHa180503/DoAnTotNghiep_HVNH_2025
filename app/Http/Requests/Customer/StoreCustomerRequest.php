@@ -40,7 +40,7 @@ class StoreCustomerRequest extends FormRequest
             'email.max' => 'Độ dài email tối đa 191 ký tự',
             'name.required' => 'Bạn chưa nhập Họ Tên',
             'name.string' => 'Họ Tên phải là dạng ký tự',
-            'customer_catalogue_id.gt' => 'Bạn chưa chọn nhóm thành viên',
+            'customer_catalogue_id.gt' => 'Bạn chưa chọn loại cộng tác viên',
             'password.required' => 'Bạn chưa nhập vào mật khẩu.',
             're_password.required' => 'Bạn phải nhập vào ô Nhập lại mật khẩu.',
             're_password.same' => 'Mật khẩu không khớp.',

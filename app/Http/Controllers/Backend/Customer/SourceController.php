@@ -26,11 +26,11 @@ class SourceController extends Controller
         SourceService $sourceService,
         SourceRepository $sourceRepository,
         LanguageRepository $languageRepository,
-    ){
+    ) {
         $this->sourceService = $sourceService;
         $this->sourceRepository = $sourceRepository;
         $this->languageRepository = $languageRepository;
-        $this->middleware(function($request, $next){
+        $this->middleware(function ($request, $next) {
             $locale = app()->getLocale(); // vn en cn
             $language = Language::where('canonical', $locale)->first();
             $this->language = $language->id;
@@ -38,10 +38,11 @@ class SourceController extends Controller
         });
     }
 
-    public function index(Request $request){
+    public function index(Request $request)
+    {
         $this->authorize('modules', 'source.index');
         $sources = $this->sourceService->paginate($request);
-      
+
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -62,7 +63,8 @@ class SourceController extends Controller
         ));
     }
 
-    public function create(){
+    public function create()
+    {
         $this->authorize('modules', 'source.create');
         $config = $this->config();
         $config['seo'] = __('messages.source');
@@ -71,20 +73,22 @@ class SourceController extends Controller
         return view('backend.dashboard.layout', compact(
             'template',
             'config',
-            
+
         ));
     }
 
-    public function store(StoresourceRequest $request){
-        if($this->sourceService->create($request, $this->language)){
-            return redirect()->route('source.index')->with('success','Thêm mới bản ghi thành công');
+    public function store(StoresourceRequest $request)
+    {
+        if ($this->sourceService->create($request, $this->language)) {
+            return redirect()->route('source.index')->with('success', 'Thêm mới bản ghi thành công');
         }
-        return redirect()->route('source.index')->with('error','Thêm mới bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('source.index')->with('error', 'Thêm mới bản ghi không thành công. Hãy thử lại');
     }
 
-    
 
-    public function edit($id){
+
+    public function edit($id)
+    {
         $this->authorize('modules', 'source.update');
         $source = $this->sourceRepository->findById($id);
         $config = $this->config();
@@ -98,14 +102,16 @@ class SourceController extends Controller
         ));
     }
 
-    public function update($id, UpdatesourceRequest $request){
-        if($this->sourceService->update($id, $request, $this->language)){
-            return redirect()->route('source.index')->with('success','Cập nhật bản ghi thành công');
+    public function update($id, UpdatesourceRequest $request)
+    {
+        if ($this->sourceService->update($id, $request, $this->language)) {
+            return redirect()->route('source.index')->with('success', 'Cập nhật bản ghi thành công');
         }
-        return redirect()->route('source.index')->with('error','Cập nhật bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('source.index')->with('error', 'Cập nhật bản ghi không thành công. Hãy thử lại');
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $this->authorize('modules', 'source.destroy');
         $config['seo'] = __('messages.source');
         $source = $this->sourceRepository->findById($id);
@@ -117,15 +123,17 @@ class SourceController extends Controller
         ));
     }
 
-    public function destroy($id){
-        if($this->sourceService->destroy($id)){
-            return redirect()->route('source.index')->with('success','Xóa bản ghi thành công');
+    public function destroy($id)
+    {
+        if ($this->sourceService->destroy($id)) {
+            return redirect()->route('source.index')->with('success', 'Xóa bản ghi thành công');
         }
-        return redirect()->route('source.index')->with('error','Xóa bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('source.index')->with('error', 'Xóa bản ghi không thành công. Hãy thử lại');
     }
 
-    
-    private function config(){
+
+    private function config()
+    {
         return [
             'css' => [
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
@@ -139,5 +147,4 @@ class SourceController extends Controller
             ]
         ];
     }
-
 }

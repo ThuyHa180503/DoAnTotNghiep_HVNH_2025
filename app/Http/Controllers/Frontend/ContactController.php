@@ -18,21 +18,23 @@ class ContactController extends FrontendController
     public function __construct(
         // ContactService $contactService,
         // ContactRepository $contactRepository,
-    ){
+    )
+    {
         // $this->ContactService = $contactService;
         // $this->ContactRepository = $contactRepository;
-        parent::__construct(); 
+        parent::__construct();
     }
 
 
-    public function index(Request $request){
-       
-       
+    public function index(Request $request)
+    {
+
+
         $config = $this->config();
         $system = $this->system;
         $seo = [
             'meta_title' => 'Trang Thông tin liên hệ',
-            'meta_description' => 'Thông tin liên hệ của '.$system['homepage_company'],
+            'meta_description' => 'Thông tin liên hệ của ' . $system['homepage_company'],
             'meta_keyword' => '',
             'meta_image' => '',
             'canonical' => write_url('lien-he')
@@ -44,7 +46,8 @@ class ContactController extends FrontendController
         ));
     }
 
-    private function config(){
+    private function config()
+    {
         return [
             'language' => $this->language,
             'css' => [
@@ -57,5 +60,4 @@ class ContactController extends FrontendController
             ]
         ];
     }
-
 }

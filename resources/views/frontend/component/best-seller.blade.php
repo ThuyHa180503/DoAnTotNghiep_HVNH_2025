@@ -1,10 +1,10 @@
 @php
-    $name = $product->languages->first()->pivot->name;
-    $canonical = write_url($product->languages->first()->pivot->canonical);
-    $image = image($product->image);
-    $price = getPrice($product);
-    $catName = $product->product_catalogues->first()->languages->first()->pivot->name;
-    $review = getReview($product);
+$name = $product->languages->first()->pivot->name;
+$canonical = write_url($product->languages->first()->pivot->canonical);
+$image = image($product->image);
+$price = getPrice($product);
+$catName = $product->product_catalogues->first()->languages->first()->pivot->name;
+$review = getReview($product);
 @endphp
 <div class="best-seller-item">
     <div class="badge">Top 1 tại OmegaDeco</div>
@@ -31,6 +31,6 @@
                 <span class="rate-number">({{ $review['count'] }} đánh giá)</span>
             </div>
         </div>
-        
+
     </div>
 </div>

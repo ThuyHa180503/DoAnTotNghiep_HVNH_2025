@@ -1,4 +1,4 @@
-<?php   
+<?php
 return [
     'module' => [
         [
@@ -49,7 +49,7 @@ return [
         [
             'title' => 'QL Sản Phẩm',
             'icon' => 'fa fa-cube',
-            'name' => ['product','attribute'],
+            'name' => ['product', 'attribute'],
             'subModule' => [
                 [
                     'title' => 'QL Nhóm Sản Phẩm',
@@ -82,16 +82,16 @@ return [
             ]
         ],
         [
-            'title' => 'QL Nhóm Khách hàng',
+            'title' => 'QL Cộng Tác Viên',
             'icon' => 'fa fa-user',
             'name' => ['customer'],
             'subModule' => [
                 [
-                    'title' => 'QL Nhóm Khách hàng',
+                    'title' => 'QL Loại cộng tác viên',
                     'route' => asset('customer/catalogue/index')
                 ],
                 [
-                    'title' => 'QL Khách hàng',
+                    'title' => 'QL Cộng tác viên',
                     'route' => 'customer/index'
                 ],
             ]
@@ -146,7 +146,7 @@ return [
         [
             'title' => 'QL Nhóm Thành Viên',
             'icon' => 'fa fa-user',
-            'name' => ['user','permission'],
+            'name' => ['user', 'permission'],
             'subModule' => [
                 [
                     'title' => 'QL Nhóm Thành Viên',
@@ -205,7 +205,7 @@ return [
                     'title' => 'Quản lý Widget',
                     'route' => 'widget/index'
                 ],
-                
+
             ]
         ]
     ],

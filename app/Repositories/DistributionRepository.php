@@ -16,9 +16,7 @@ class DistributionRepository extends BaseRepository implements DistributionRepos
 
     public function __construct(
         Distribution $model
-    ){
+    ) {
         $this->model = $model;
     }
-
-
 }

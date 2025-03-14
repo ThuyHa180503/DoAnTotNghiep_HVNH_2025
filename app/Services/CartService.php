@@ -32,7 +32,7 @@ class CartService  implements CartServiceInterface
         PromotionRepository $promotionRepository,
         OrderRepository $orderRepository,
         ProductService $productService,
-    ){
+    ) {
         $this->productRepository = $productRepository;
         $this->productVariantRepository = $productVariantRepository;
         $this->promotionRepository = $promotionRepository;
@@ -40,13 +40,14 @@ class CartService  implements CartServiceInterface
         $this->productService = $productService;
     }
 
-    
 
-    public function create($request, $language = 1){
-        try{
+
+    public function create($request, $language = 1)
+    {
+        try {
             $payload = $request->input();
             $product = $this->productRepository->findById($payload['id'], ['*'], [
-                'languages' => function($query) use ($language) {
+                'languages' => function ($query) use ($language) {
                     $query->where('language_id',  $language);
                 }
             ]);
@@ -55,20 +56,20 @@ class CartService  implements CartServiceInterface
                 'name' => $product->languages->first()->pivot->name,
                 'qty' => $payload['quantity'],
             ];
-            if(isset($payload['attribute_id']) && count($payload['attribute_id'])){
+            if (isset($payload['attribute_id']) && count($payload['attribute_id'])) {
                 $attributeId = sortAttributeId($payload['attribute_id']);
                 $variant = $this->productVariantRepository->findVariant($attributeId, $product->id, $language);
                 $variantPromotion = $this->promotionRepository->findPromotionByVariantUuid($variant->uuid);
                 $variantPrice = getVariantPrice($variant, $variantPromotion);
 
-                $data['id'] =  $product->id.'_'.$variant->uuid;
-                $data['name'] = $product->languages->first()->pivot->name.' '.$variant->languages()->first()->pivot->name;
+                $data['id'] =  $product->id . '_' . $variant->uuid;
+                $data['name'] = $product->languages->first()->pivot->name . ' ' . $variant->languages()->first()->pivot->name;
                 $data['price'] = ($variantPrice['priceSale'] > 0) ? $variantPrice['priceSale'] : $variantPrice['price'];
                 $data['options'] = [
                     'attribute' => $payload['attribute_id'],
                 ];
-            }else{
-                $product = $this->productService->combineProductAndPromotion([$product->id], $product, true); 
+            } else {
+                $product = $this->productService->combineProductAndPromotion([$product->id], $product, true);
                 $price = getPrice($product);
                 $data['price'] = ($price['priceSale'] > 0) ? $price['priceSale'] : $price['price'];
             }
@@ -76,14 +77,16 @@ class CartService  implements CartServiceInterface
             Cart::instance('shopping')->add($data);
 
             return true;
-        }catch(\Exception $e ){
-            echo $e->getMessage().$e->getCode();die();
+        } catch (\Exception $e) {
+            echo $e->getMessage() . $e->getCode();
+            die();
             return false;
         }
     }
 
-    public function update($request){
-        try{
+    public function update($request)
+    {
+        try {
             $payload = $request->input();
             Cart::instance('shopping')->update($payload['rowId'], $payload['qty']);
             $cartCaculate = $this->cartAndPromotion();
@@ -91,31 +94,35 @@ class CartService  implements CartServiceInterface
             $cartCaculate['cartItemSubTotal'] = $cartItem->qty * $cartItem->price;
 
             return $cartCaculate;
-        }catch(\Exception $e ){
-            echo $e->getMessage().$e->getCode();die();
+        } catch (\Exception $e) {
+            echo $e->getMessage() . $e->getCode();
+            die();
             return false;
         }
     }
 
-    public function delete($request){
-        try{
+    public function delete($request)
+    {
+        try {
             $payload = $request->input();
             Cart::instance('shopping')->remove($payload['rowId']);
             $cartCaculate = $this->cartAndPromotion();
             return $cartCaculate;
-        }catch(\Exception $e ){
-            echo $e->getMessage().$e->getCode();die();
+        } catch (\Exception $e) {
+            echo $e->getMessage() . $e->getCode();
+            die();
             return false;
         }
     }
 
 
-    public function order($request, $system){
+    public function order($request, $system)
+    {
         DB::beginTransaction();
-        try{
+        try {
             $payload = $this->request($request);
             $order = $this->orderRepository->create($payload, ['products']);
-            if($order->id > 0){
+            if ($order->id > 0) {
                 $this->createOrderProduct($payload, $order, $request);
                 $this->mail($order, $system);
                 Cart::instance('shopping')->destroy();
@@ -125,10 +132,11 @@ class CartService  implements CartServiceInterface
                 'order' => $order,
                 'flag' => TRUE,
             ];
-        }catch(\Exception $e ){
+        } catch (\Exception $e) {
             DB::rollBack();
             // Log::error($e->getMessage());
-            echo $e->getMessage();die();
+            echo $e->getMessage();
+            die();
             return [
                 'order' => null,
                 'flag' => false,
@@ -136,7 +144,8 @@ class CartService  implements CartServiceInterface
         }
     }
 
-    private function mail($order, $sytem){
+    private function mail($order, $sytem)
+    {
         $to = $order->email;
         $cc = $sytem['contact_email'];
         $carts = Cart::instance('shopping')->content();
@@ -144,25 +153,25 @@ class CartService  implements CartServiceInterface
         $cartCaculate = $this->cartAndPromotion();
         $cartPromotion = $this->cartPromotion($cartCaculate['cartTotal']);
         $data = [
-            'order' => $order, 
-            'carts' => $carts, 
-            'cartCaculate' => $cartCaculate, 
+            'order' => $order,
+            'carts' => $carts,
+            'cartCaculate' => $cartCaculate,
             'cartPromotion' => $cartPromotion
         ];
-        
-        \Mail::to($to)->cc($cc)->send(new OrderMail($data));
 
+        \Mail::to($to)->cc($cc)->send(new OrderMail($data));
     }
 
 
-    
 
-    private function createOrderProduct($payload, $order, $request){
+
+    private function createOrderProduct($payload, $order, $request)
+    {
         $carts = Cart::instance('shopping')->content();
         $carts = $this->remakeCart($carts);
         $temp = [];
-        if(!is_null($carts)){
-            foreach($carts as $key => $val){
+        if (!is_null($carts)) {
+            foreach ($carts as $key => $val) {
                 $extract = explode('_', $val->id);
                 $temp[] = [
                     'product_id' => $extract[0],
@@ -171,15 +180,16 @@ class CartService  implements CartServiceInterface
                     'qty' => $val->qty,
                     'price' => $val->price,
                     'priceOriginal' => $val->priceOriginal,
-                    'option' => json_encode($val->options), 
+                    'option' => json_encode($val->options),
                 ];
-            }     
+            }
         }
         $order->products()->sync($temp);
     }
 
-    private function request($request){
-        
+    private function request($request)
+    {
+
         $cartCaculate = $this->reCaculateCart();
         $cartPromotion = $this->cartPromotion($cartCaculate['cartTotal']);
 
@@ -197,7 +207,8 @@ class CartService  implements CartServiceInterface
         return $payload;
     }
 
-    private function cartAndPromotion(){
+    private function cartAndPromotion()
+    {
         $cartCaculate = $this->reCaculateCart();
         $cartPromotion = $this->cartPromotion($cartCaculate['cartTotal']);
         $cartCaculate['cartTotal'] = $cartCaculate['cartTotal'] - $cartPromotion['discount'];
@@ -206,11 +217,12 @@ class CartService  implements CartServiceInterface
         return $cartCaculate;
     }
 
-    public function reCaculateCart(){
+    public function reCaculateCart()
+    {
         $carts = Cart::instance('shopping')->content();
         $total = 0;
         $totalItems = 0;
-        foreach($carts as $cart){
+        foreach ($carts as $cart) {
             $total = $total + $cart->price * $cart->qty;
             $totalItems = $totalItems + $cart->qty;
         }
@@ -222,61 +234,69 @@ class CartService  implements CartServiceInterface
 
 
 
-    public function remakeCart($carts){
+    public function remakeCart($carts)
+    {
         $cartId = $carts->pluck('id')->all();
         $temp = [];
         $objects = [];
-        if(count($cartId)){
-            foreach($cartId as $key => $val){
+        if (count($cartId)) {
+            foreach ($cartId as $key => $val) {
                 $extract = explode('_', $val);
-                if(count($extract) > 1){
+                if (count($extract) > 1) {
                     $temp['variant'][] = $extract[1];
-                }else{
+                } else {
                     $temp['product'][] = $extract[0];
                 }
             }
 
-            
-            if(isset($temp['variant'])){
+
+            if (isset($temp['variant'])) {
                 $objects['variants'] = $this->productVariantRepository->findByCondition(
-                    [], true, [], ['id', 'desc'], ['whereIn' => $temp['variant'], 'whereInField' => 'uuid']
+                    [],
+                    true,
+                    [],
+                    ['id', 'desc'],
+                    ['whereIn' => $temp['variant'], 'whereInField' => 'uuid']
                 )->keyBy('uuid');
             }
-            
-            if(isset($temp['product'])){
+
+            if (isset($temp['product'])) {
                 $objects['products'] = $this->productRepository->findByCondition(
                     [
                         config('apps.general.defaultPublish')
-                    ], true, [], ['id', 'desc'], ['whereIn' => $temp['product'], 'whereInField' => 'id']
+                    ],
+                    true,
+                    [],
+                    ['id', 'desc'],
+                    ['whereIn' => $temp['product'], 'whereInField' => 'id']
                 )->keyBy('id');
             }
-           
 
-            foreach($carts as $keyCart => $cart){
+
+            foreach ($carts as $keyCart => $cart) {
                 $explode = explode('_', $cart->id);
                 $objectId = $explode[1] ?? $explode[0];
                 if (isset($objects['variants'][$objectId])) {
                     $variantItem = $objects['variants'][$objectId];
-                    $variantImage = explode(',' ,$variantItem->album)[0] ?? null;
+                    $variantImage = explode(',', $variantItem->album)[0] ?? null;
                     $cart->setImage($variantImage)->setPriceOriginal($variantItem->price);
                 } elseif (isset($objects['products'][$objectId])) {
                     $productItem = $objects['products'][$objectId];
                     $cart->setImage($productItem->image)->setPriceOriginal($productItem->price);
-
                 }
             }
-
         }
 
         return $carts;
     }
 
-    public function cartPromotion($cartTotal = 0){
+    public function cartPromotion($cartTotal = 0)
+    {
         $maxDiscount = 0;
         $selectedPromotion = null;
         $promotions = $this->promotionRepository->getPromotionByCartTotal();
-        if(!is_null($promotions)){
-            foreach($promotions as $promotion){
+        if (!is_null($promotions)) {
+            foreach ($promotions as $promotion) {
                 $discount = $promotion->discountInformation['info'];
                 $amountFrom = $discount['amountFrom'] ?? [];
                 $amountTo = $discount['amountTo'] ?? [];
@@ -284,23 +304,22 @@ class CartService  implements CartServiceInterface
                 $amountType = $discount['amountType'] ?? [];
 
 
-                if(!empty($amountFrom) && count($amountFrom) == count($amountTo) && count($amountTo) == count($amountValue)){
-                    for($i = 0; $i < count($amountFrom); $i++){
+                if (!empty($amountFrom) && count($amountFrom) == count($amountTo) && count($amountTo) == count($amountValue)) {
+                    for ($i = 0; $i < count($amountFrom); $i++) {
                         $currentAmountFrom = convert_price($amountFrom[$i]);
                         $currentAmountTo = convert_price($amountTo[$i]);
                         $currentAmountValue = convert_price($amountValue[$i]);
                         $currentAmountType = $amountType[$i];
-                        if($cartTotal > $currentAmountFrom && ($cartTotal <= $currentAmountTo ) || $cartTotal > $currentAmountTo){
+                        if ($cartTotal > $currentAmountFrom && ($cartTotal <= $currentAmountTo) || $cartTotal > $currentAmountTo) {
 
-                            if($currentAmountType == 'cash'){
+                            if ($currentAmountType == 'cash') {
                                 $maxDiscount = max($maxDiscount, $currentAmountValue);
-                            }else if($currentAmountType == 'percent'){
-                                $discountValue = ($currentAmountValue/100)*$cartTotal;
+                            } else if ($currentAmountType == 'percent') {
+                                $discountValue = ($currentAmountValue / 100) * $cartTotal;
                                 $maxDiscount = max($maxDiscount, $discountValue);
                             }
                             $selectedPromotion = $promotion;
                         }
-
                     }
                 }
             }
@@ -310,5 +329,4 @@ class CartService  implements CartServiceInterface
             'selectedPromotion' => $selectedPromotion
         ];
     }
-   
 }

@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="form-row">
-                    <span class="text-danger notice" >*{{ __('messages.parentNotice') }}</span>
+                    <span class="text-danger notice">*{{ __('messages.parentNotice') }}</span>
                     <select name="parent_id" class="form-control setupSelect2" id="">
                         @foreach($dropdown as $key => $val)
                         <option {{ 
@@ -27,12 +27,11 @@
         <div class="row">
             <div class="col-lg-12">
                 <div class="form-row">
-                    <input 
-                        type="text" 
-                        name="icon" 
+                    <input
+                        type="text"
+                        name="icon"
                         value="{{ old('icon', ($productCatalogue->icon) ?? '' ) }}"
-                        class="upload-image form-control"
-                    >
+                        class="upload-image form-control">
                 </div>
             </div>
         </div>

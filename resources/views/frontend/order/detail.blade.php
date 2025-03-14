@@ -117,73 +117,73 @@
         body {
             background-color: #f5f5f5;
         }
-    
+
         .product-item {
             display: flex;
             align-items: flex-start;
             margin-bottom: 20px;
         }
-    
+
         .product-item img {
             width: 60px;
             height: 60px;
             margin-right: 10px;
         }
-    
+
         .product-item .badge {
             background-color: #ff424f;
             color: white;
             font-size: 12px;
             margin-right: 5px;
         }
-    
+
         .product-item .product-details {
             flex-grow: 1;
         }
-    
+
         .product-item .product-details p {
             margin: 0;
         }
-    
+
         .product-item .product-details .product-name {
             font-size: 14px;
             font-weight: bold;
         }
-    
+
         .product-item .product-details .product-type {
             font-size: 12px;
             color: #666;
         }
-    
+
         .product-item .product-details .product-quantity {
             font-size: 12px;
             color: #666;
         }
-    
+
         .summary-table {
             width: 100%;
             margin-top: 20px;
         }
-    
+
         .summary-table td {
             padding: 10px 0;
         }
-    
+
         .summary-table .total-amount {
             font-size: 18px;
             color: #ff424f;
             font-weight: bold;
         }
-    
+
         .summary-table .total-amount-cell {
             text-align: right;
         }
-    
+
         .summary-table .info-icon {
             font-size: 12px;
             color: #999;
         }
-    
+
         .payment-method {
             margin-top: 20px;
             padding: 10px;
@@ -192,7 +192,7 @@
             color: #ff9800;
             font-size: 14px;
         }
-    
+
         .payment-method .payment-amount {
             font-size: 18px;
             color: #ff424f;
@@ -251,7 +251,7 @@
                             width="100%" height="250" style="border:0;" allowfullscreen="" loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
-                    
+
                     <div class="product-item">
                         <img alt="Product image of a black face mask with a hat" height="60"
                             src="https://storage.googleapis.com/a1aa/image/3pwjc6dA2OrwKhAjSTDf5pe93f3mW31qZ9qgxk7WS2xMgamnA.jpg"
@@ -329,8 +329,8 @@
                                 ₫32.200
                             </td>
                         </tr>
-                        
-                    
+
+
                         <tr>
                             <td>
                                 Thành tiền
@@ -353,8 +353,8 @@
 
                     <hr>
 
-                    
-            
+
+
 
                 </div>
             </div>

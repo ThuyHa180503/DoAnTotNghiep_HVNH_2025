@@ -8,13 +8,14 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Customer\EditProfileRequest;
 use App\Http\Requests\Customer\RecoverCustomerPasswordRequest;
+use App\Models\Order;
 use App\Services\Interfaces\CustomerServiceInterface  as CustomerService;
 use App\Services\Interfaces\ConstructServiceInterface  as ConstructService;
 use App\Repositories\Interfaces\ConstructRepositoryInterface  as ConstructRepository;
 
 class CustomerController extends FrontendController
 {
-  
+
     protected $customerService;
     protected $constructRepository;
     protected $constructService;
@@ -25,24 +26,24 @@ class CustomerController extends FrontendController
         ConstructRepository $constructRepository,
         ConstructService $constructService,
 
-    ){
+    ) {
 
         $this->customerService = $customerService;
         $this->constructService = $constructService;
         $this->constructRepository = $constructRepository;
 
         parent::__construct();
-    
     }
 
-  
-    public function profile(){
+
+    public function profile()
+    {
 
         $customer = Auth::guard('customer')->user();
-       
+
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý tài khoản khách hàng'.$customer['name'],
+            'meta_title' => 'Trang quản lý tài khoản khách hàng' . $customer['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -55,20 +56,22 @@ class CustomerController extends FrontendController
         ));
     }
 
-    public function updateProfile(EditProfileRequest $request){
-        $customerId =  Auth::guard('customer')->user()->id;       
-        if($this->customerService->update($customerId, $request)){
-            return redirect()->route('customer.profile')->with('success','Thêm mới bản ghi thành công');
+    public function updateProfile(EditProfileRequest $request)
+    {
+        $customerId =  Auth::guard('customer')->user()->id;
+        if ($this->customerService->update($customerId, $request)) {
+            return redirect()->route('customer.profile')->with('success', 'Thêm mới bản ghi thành công');
         }
-        return redirect()->route('customer.profile')->with('error','Thêm mới bản ghi không thành công. Hãy thử lại');
+        return redirect()->route('customer.profile')->with('error', 'Thêm mới bản ghi không thành công. Hãy thử lại');
     }
 
-    public function passwordForgot(){
+    public function passwordForgot()
+    {
 
         $customer = Auth::guard('customer')->user();
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang thay đổi mật khẩu'.$customer['name'],
+            'meta_title' => 'Trang thay đổi mật khẩu' . $customer['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -81,7 +84,8 @@ class CustomerController extends FrontendController
         ));
     }
 
-    public function recovery(RecoverCustomerPasswordRequest $request){
+    public function recovery(RecoverCustomerPasswordRequest $request)
+    {
         $customer = Auth::guard('customer')->user();
 
         if (!Hash::check($request->password, $customer->password)) {
@@ -95,12 +99,14 @@ class CustomerController extends FrontendController
         return redirect()->route('customer.profile')->with('success', 'Mật khẩu đã được thay đổi thành công.');
     }
 
-    public function logout(){
+    public function logout()
+    {
         Auth::guard('customer')->logout();
         return redirect()->route('home.index')->with('success', 'Bạn đã đăng xuất khỏi hệ thống.');
     }
 
-    public function construction(Request $request){
+    public function construction(Request $request)
+    {
         $customer = Auth::guard('customer')->user();
         $condition = [
             'keyword' => $request->input('keyword'),
@@ -109,13 +115,13 @@ class CustomerController extends FrontendController
         $constructs = $this->constructRepository->findConstructByCustomer($customer->id, $condition);
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Trang quản lý danh sách công trình của '.$customer['name'],
+            'meta_title' => 'Trang quản lý danh sách công trình của ' . $customer['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
             'canonical' => route('customer.profile')
         ];
-    
+
         return view('frontend.auth.customer.construction', compact(
             'seo',
             'system',
@@ -123,16 +129,17 @@ class CustomerController extends FrontendController
             'constructs',
         ));
     }
-    
 
-    public function constructionProduct($id){
+
+    public function constructionProduct($id)
+    {
         $customer = Auth::guard('customer')->user();
 
         $construction = $this->constructRepository->findById($id, ['*'], ['products']);
 
         $system = $this->system;
         $seo = [
-            'meta_title' => 'Chi tiết sản phẩm công trình '.$construction->name.' của '.$customer['name'],
+            'meta_title' => 'Chi tiết sản phẩm công trình ' . $construction->name . ' của ' . $customer['name'],
             'meta_keyword' => '',
             'meta_description' => '',
             'meta_image' => '',
@@ -146,7 +153,8 @@ class CustomerController extends FrontendController
         ));
     }
 
-    public function warranty(Request $request){
+    public function warranty(Request $request)
+    {
         $customer = Auth::guard('customer')->user();
 
         $condition = [
@@ -173,13 +181,36 @@ class CustomerController extends FrontendController
         ));
     }
 
-    
-    public function active(Request $request){
-        $response = $this->constructService->activeWarranty($request, 'active');
-        return response()->json($response); 
 
+    public function active(Request $request)
+    {
+        $response = $this->constructService->activeWarranty($request, 'active');
+        return response()->json($response);
     }
 
-   
+    public function order()
+    {
+        $customer = Auth::guard('customer')->user();
+        $customerID = Auth::guard('customer')->id();
+        $orders = Order::where('customer_id', 5)->get();
+        $system = $this->system;
 
+        $seo = [
+            'meta_title' => 'Trang quản lý tài khoản khách hàng' . $customer['name'],
+            'meta_keyword' => '',
+            'meta_description' => '',
+            'meta_image' => '',
+            'canonical' => route('customer.profile')
+        ];
+        return view('frontend.auth.customer.order', compact(
+            'seo',
+            'system',
+            'customer',
+            'orders'
+        ));
+    }
+    public function wallet()
+    {
+        return view('frontend.auth.customer.wallet');
+    }
 }

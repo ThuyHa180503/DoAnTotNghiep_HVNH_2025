@@ -1,7 +1,7 @@
 @include('backend.dashboard.component.breadcrumb', ['title' => $config['seo'][$config['method']]['title']])
 @include('backend.dashboard.component.formError')
 @php
-    $url = ($config['method'] == 'create') ? route('product.catalogue.store') : route('product.catalogue.update', [$productCatalogue->id, $queryUrl ?? '']);
+$url = ($config['method'] == 'create') ? route('product.catalogue.store') : route('product.catalogue.update', [$productCatalogue->id, $queryUrl ?? '']);
 @endphp
 <form action="{{ $url }}" method="post" class="box">
     @csrf
@@ -16,8 +16,8 @@
                         @include('backend.dashboard.component.content', ['model' => ($productCatalogue) ?? null])
                     </div>
                 </div>
-               @include('backend.dashboard.component.album', ['model' => ($productCatalogue) ?? null])
-               @include('backend.dashboard.component.seo', ['model' => ($productCatalogue) ?? null])
+                @include('backend.dashboard.component.album', ['model' => ($productCatalogue) ?? null])
+                @include('backend.dashboard.component.seo', ['model' => ($productCatalogue) ?? null])
             </div>
             <div class="col-lg-3">
                 @include('backend.product.catalogue.component.aside')

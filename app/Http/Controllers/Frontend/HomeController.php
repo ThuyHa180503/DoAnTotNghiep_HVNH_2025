@@ -28,21 +28,22 @@ class HomeController extends FrontendController
         WidgetService $widgetService,
         SlideService $slideService,
         SystemRepository $systemRepository,
-    ){
+    ) {
         $this->slideRepository = $slideRepository;
         $this->widgetService = $widgetService;
         $this->slideService = $slideService;
         $this->systemRepository = $systemRepository;
 
         parent::__construct(
-           $systemRepository,
-        ); 
+            $systemRepository,
+        );
     }
 
-    
 
 
-    public function index(){
+
+    public function index()
+    {
 
 
         $config = $this->config();
@@ -51,7 +52,7 @@ class HomeController extends FrontendController
             // ['keyword' => 'homepage-customer', 'children' => true],
             // ['keyword' => 'category-highlight'],
             ['keyword' => 'product', 'children' => true, 'promotion' => TRUE, 'object' => TRUE],
-            ['keyword' => 'flash-sale','promotion' => true],
+            ['keyword' => 'flash-sale', 'promotion' => true],
             // ['keyword' => 'home-intro'],
             // ['keyword' => 'home-project', 'object' => true],
             // ['keyword' => 'home-video', 'object' => true],
@@ -59,7 +60,7 @@ class HomeController extends FrontendController
             ['keyword' => 'posts', 'object' => true],
         ], $this->language);
 
-        // dd($widgets);
+        //dd($widgets);
 
         $slides = $this->slideService->getSlide([SlideEnum::BANNER, SlideEnum::MAIN, 'banner'], $this->language);
         $system = $this->system;
@@ -79,13 +80,15 @@ class HomeController extends FrontendController
         ));
     }
 
-    public function ckfinder(){
+    public function ckfinder()
+    {
         return view('frontend.homepage.home.ckfinder');
     }
 
-  
 
-    private function config(){
+
+    private function config()
+    {
         return [
             'language' => $this->language,
             'css' => [
@@ -98,5 +101,4 @@ class HomeController extends FrontendController
             ]
         ];
     }
-
 }

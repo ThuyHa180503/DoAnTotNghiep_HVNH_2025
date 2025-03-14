@@ -1,4 +1,4 @@
-<?php  
+<?php
 return [
     'postCatalogue' => [
         'index' => [
@@ -13,7 +13,7 @@ return [
         ],
         'delete' => [
             'title' => 'Delete Post Group'
-        ],    
+        ],
     ],
     'post' => [
         'index' => [
@@ -46,7 +46,7 @@ return [
         ],
         'permission' => [
             'title' => 'Update Permissions'
-        ],  
+        ],
     ],
     'permission' => [
         'index' => [
@@ -61,7 +61,7 @@ return [
         ],
         'delete' => [
             'title' => 'Delete Permission'
-        ],   
+        ],
     ],
     'parent' => 'Choose parent category',
     'parentNotice' => 'Choose Root if there is no parent category',

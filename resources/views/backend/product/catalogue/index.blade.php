@@ -1,4 +1,3 @@
-
 @include('backend.dashboard.component.breadcrumb', ['title' => $config['seo']['index']['title']])
 <div class="row mt20">
     <div class="col-lg-12">
@@ -14,4 +13,3 @@
         </div>
     </div>
 </div>
-

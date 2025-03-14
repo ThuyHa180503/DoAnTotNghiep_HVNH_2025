@@ -3,16 +3,15 @@
     <div class="col-lg-12">
         <div class="form-row">
             <label for="" class="control-label text-left">{{ __('messages.title') }}<span class="text-danger">(*)</span></label>
-            <input 
+            <input
                 type="text"
                 name="name"
                 value="{{ old('name', ($model->name) ?? '' ) }}"
                 class="form-control change-title"
-                data-flag = "{{ (isset($model->name)) ? 1 : 0 }}"
+                data-flag="{{ (isset($model->name)) ? 1 : 0 }}"
                 placeholder=""
                 autocomplete="off"
-                {{ (isset($disabled)) ? 'disabled' : '' }}
-            >
+                {{ (isset($disabled)) ? 'disabled' : '' }}>
         </div>
     </div>
 </div>
@@ -21,11 +20,11 @@
     <div class="col-lg-12">
         <div class="form-row">
             <label for="" class="control-label text-left">{{ __('messages.description') }} </label>
-            <textarea 
-                name="description" 
-                class="ck-editor" 
+            <textarea
+                name="description"
+                class="ck-editor"
                 id="ckDescription"
-                {{ (isset($disabled)) ? 'disabled' : '' }} 
+                {{ (isset($disabled)) ? 'disabled' : '' }}
                 data-height="100">{{ old('description', ($model->description) ?? '') }}</textarea>
         </div>
     </div>
@@ -45,8 +44,7 @@
                 autocomplete="off"
                 id="ckContent"
                 data-height="500"
-                {{ (isset($disabled)) ? 'disabled' : '' }}
-            >{{ old('content', ($model->content) ?? '' ) }}</textarea>
+                {{ (isset($disabled)) ? 'disabled' : '' }}>{{ old('content', ($model->content) ?? '' ) }}</textarea>
         </div>
     </div>
 </div>

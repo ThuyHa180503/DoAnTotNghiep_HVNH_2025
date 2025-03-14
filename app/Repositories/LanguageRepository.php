@@ -16,9 +16,7 @@ class LanguageRepository extends BaseRepository implements LanguageRepositoryInt
 
     public function __construct(
         Language $model
-    ){
+    ) {
         $this->model = $model;
     }
-
-
 }

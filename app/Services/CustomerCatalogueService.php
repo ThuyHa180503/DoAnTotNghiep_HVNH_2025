@@ -18,93 +18,101 @@ class CustomerCatalogueService extends BaseService implements CustomerCatalogueS
 {
     protected $customerCatalogueRepository;
     protected $customerRepository;
-    
+
 
     public function __construct(
         CustomerCatalogueRepository $customerCatalogueRepository,
         CustomerRepository $customerRepository
-    ){
+    ) {
         $this->customerCatalogueRepository = $customerCatalogueRepository;
         $this->customerRepository = $customerRepository;
     }
 
-    
 
-    public function paginate($request){
+
+    public function paginate($request)
+    {
         $condition = [
             'keyword' => addslashes($request->input('keyword')),
             'publish' => $request->integer('publish')
         ];
         $perPage = $request->integer('perpage');
         $customerCatalogues = $this->customerCatalogueRepository->pagination(
-            $this->paginateSelect(), 
-            $condition, 
-            $perPage, 
-            ['path' => 'customer/catalogue/index'], 
-            ['id', 'DESC'],  
+            $this->paginateSelect(),
+            $condition,
+            $perPage,
+            ['path' => 'customer/catalogue/index'],
+            ['id', 'DESC'],
             [],
             ['customers']
         );
         return $customerCatalogues;
     }
 
-    public function create($request){
+    public function create($request)
+    {
         DB::beginTransaction();
-        try{
-            $payload = $request->except(['_token','send']);
+        try {
+            $payload = $request->except(['_token', 'send']);
             $customer = $this->customerCatalogueRepository->create($payload);
             DB::commit();
             return true;
-        }catch(\Exception $e ){
+        } catch (\Exception $e) {
             DB::rollBack();
             // Log::error($e->getMessage());
-            echo $e->getMessage();die();
+            echo $e->getMessage();
+            die();
             return false;
         }
     }
 
 
-    public function update($id, $request){
+    public function update($id, $request)
+    {
         DB::beginTransaction();
-        try{
+        try {
 
-            $payload = $request->except(['_token','send']);
+            $payload = $request->except(['_token', 'send']);
             $customer = $this->customerCatalogueRepository->update($id, $payload);
             DB::commit();
             return true;
-        }catch(\Exception $e ){
+        } catch (\Exception $e) {
             DB::rollBack();
             // Log::error($e->getMessage());
-            echo $e->getMessage();die();
+            echo $e->getMessage();
+            die();
             return false;
         }
     }
 
-    public function destroy($id){
+    public function destroy($id)
+    {
         DB::beginTransaction();
-        try{
+        try {
             $customer = $this->customerCatalogueRepository->delete($id);
 
             DB::commit();
             return true;
-        }catch(\Exception $e ){
+        } catch (\Exception $e) {
             DB::rollBack();
             // Log::error($e->getMessage());
-            echo $e->getMessage();die();
+            echo $e->getMessage();
+            die();
             return false;
         }
     }
 
 
-    private function paginateSelect(){
+    private function paginateSelect()
+    {
         return [
-            'id', 
-            'name', 
+            'id',
+            'name',
             'description',
             'publish',
-
+            'percent',
+            'money_condition',
+            'quantity_condition',
         ];
     }
-
-
 }
