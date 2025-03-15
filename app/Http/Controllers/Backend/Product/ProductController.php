@@ -13,6 +13,9 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Classes\Nestedsetbie;
 use App\Models\Language;
+use App\Models\Price_group;
+use App\Models\Price_range;
+use App\Models\ProductCatalogue;
 
 class ProductController extends Controller
 {
@@ -98,6 +101,31 @@ class ProductController extends Controller
 
     public function store(StoreProductRequest $request)
     {
+       
+        $brand_id = $request->product_catalogue_id;
+        $range = Price_range::where('brand_id', $brand_id)->first();
+    
+        $final_price = (float) str_replace('.', '', $request->price);
+        if (!empty($request->catalogue)) {
+            $price_group = Price_group::where('brand_id', $brand_id)
+                ->whereIn('product_catalogue_id', $request->catalogue)
+                ->first(); 
+            if ($price_group) { 
+                $final_price -= ($final_price * ($price_group->discount/100)); 
+                $final_price=$final_price*$price_group->exchange_rate;
+            }
+           
+        }
+            if ($range->range_from <= $final_price && $final_price <= $range->range_to) {
+                if ($range->value_type == "percentage") {
+                    
+                    $final_price = $final_price - ($final_price * ($range->value / 100));
+                } elseif ($range->value_type == "fixed") {
+                    $final_price = $final_price - $range->value;
+                }
+            }
+
+        $request->merge(['price' => $final_price]);        
         if ($this->productService->create($request, $this->language)) {
             return redirect()->route('product.index')->with('success', 'Thêm mới bản ghi thành công');
         }

@@ -52,8 +52,20 @@ return [
             'name' => ['product', 'attribute'],
             'subModule' => [
                 [
-                    'title' => 'QL Nhóm Sản Phẩm',
+                    'title' => 'QL Danh mục',
                     'route' => 'product/catalogue/index'
+                ],
+                [
+                    'title' => 'QL Thương hiệu',
+                    'route' => 'product/brand/index'
+                ],
+                [
+                    'title' => 'QL Nhóm giá',
+                    'route' => 'price_group/index'
+                ],
+                [
+                    'title' => 'Ql Dải giá',
+                    'route' => 'price_range/index'
                 ],
                 [
                     'title' => 'QL Sản phẩm',
@@ -67,7 +79,7 @@ return [
                     'title' => 'QL thuộc tính',
                     'route' => 'attribute/index'
                 ],
-
+                
             ]
         ],
         [
@@ -111,12 +123,6 @@ return [
                 ],
             ]
         ],
-        // [
-        //     'title' => 'Hệ thống phân phối',
-        //     'icon' => 'fa fa-truck',
-        //     'name' => ['distribution'],
-        //     'route' => 'distribution/index'
-        // ],
         [
             'title' => 'QL Bài viết',
             'icon' => 'fa fa-file',
@@ -187,15 +193,20 @@ return [
         [
             'title' => 'Cấu hình chung',
             'icon' => 'fa fa-file',
-            'name' => ['language', 'generate', 'system', 'widget'],
+            'name' => [ 'system', 'widget'],
             'subModule' => [
-                [
-                    'title' => 'QL Ngôn ngữ',
-                    'route' => 'language/index'
-                ],
+                // [
+                //     'title' => 'QL Ngôn ngữ',
+                //     'route' => 'language/index'
+                // ],
                 // [
                 //     'title' => 'QL Module',
                 //     'route' => 'generate/index'
+                // ],
+                 // [
+                //     'title' => 'QL Thương hiệu',
+                //     'name' => ['distribution'],
+                //     'route' => 'distribution/index'
                 // ],
                 [
                     'title' => 'Cấu hình hệ thống',

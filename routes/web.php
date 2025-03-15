@@ -39,6 +39,11 @@ use App\Http\Controllers\Backend\Product\ProductCatalogueController;
 use App\Http\Controllers\Backend\Product\ProductController;
 use App\Http\Controllers\Backend\Attribute\AttributeCatalogueController;
 use App\Http\Controllers\Backend\Attribute\AttributeController;
+
+
+use App\Http\Controllers\Backend\Price\PriceGroupController;
+use App\Http\Controllers\Backend\Price\PriceRangeController;
+
 use App\Http\Controllers\Backend\SystemController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\RouterController;
@@ -111,8 +116,14 @@ Route::group(['middleware' => 'license'], function () {
 
       Route::get('customer/order' . config('apps.general.suffix'), [FeCustomerController::class, 'order'])->name('customer.order');
       Route::get('customer/wallet' . config('apps.general.suffix'), [FeCustomerController::class, 'wallet'])->name('customer.wallet');
+      Route::get('customer/create' . config('apps.general.suffix'), [FeCustomerController::class, 'createCustomer'])->name('customer.createCustomer');
+      Route::post('/wallet/store' . config('apps.general.suffix'), [FeCustomerController::class, 'store'])->name('customer.store123');
+
+      Route::post('/wallet/update-bank' . config('apps.general.suffix'), [FeCustomerController::class, 'updateBankAccount'])->name('wallet.updateBank');
 
       Route::get('customer/profile' . config('apps.general.suffix'), [FeCustomerController::class, 'profile'])->name('customer.profile');
+      Route::delete('customer/{id}/cancelOrder' . config('apps.general.suffix'), [FeCustomerController::class, 'cancelOrder'])->name('customer.cancelOrder');
+
       Route::post('customer/profile/update' . config('apps.general.suffix'), [FeCustomerController::class, 'updateProfile'])->name('customer.profile.update');
       Route::get('customer/password/reset' . config('apps.general.suffix'), [FeCustomerController::class, 'passwordForgot'])->name('customer.password.change');
       Route::post('customer/password/recovery' . config('apps.general.suffix'), [FeCustomerController::class, 'recovery'])->name('customer.password.recovery');
@@ -412,7 +423,27 @@ Route::group(['middleware' => 'license'], function () {
          Route::post('{id}/update', [AttributeCatalogueController::class, 'update'])->where(['id' => '[0-9]+'])->name('attribute.catalogue.update');
          Route::get('{id}/delete', [AttributeCatalogueController::class, 'delete'])->where(['id' => '[0-9]+'])->name('attribute.catalogue.delete');
          Route::delete('{id}/destroy', [AttributeCatalogueController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('attribute.catalogue.destroy');
+         
       });
+
+      Route::group(['prefix' => 'price_group'], function () {
+         Route::get('index', [PriceGroupController::class, 'index'])->name('price_group.index');
+         Route::get('create', [PriceGroupController::class, 'create'])->name('price_group.create');
+         Route::post('store', [PriceGroupController::class, 'store'])->name('price_group.store');
+         Route::get('{id}/edit', [PriceGroupController::class, 'edit'])->where(['id' => '[0-9]+'])->name('price_group.edit');
+         Route::put('{id}/update', [PriceGroupController::class, 'update'])->where(['id' => '[0-9]+'])->name('price_group.update');
+         Route::delete('{id}/destroy', [PriceGroupController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('price_group.destroy');
+      });
+
+      Route::group(['prefix' => 'price_range'], function () {
+         Route::get('index', [PriceRangeController::class, 'index'])->name('price_range.index');
+         Route::get('create', [PriceRangeController::class, 'create'])->name('price_range.create');
+         Route::post('store', [PriceRangeController::class, 'store'])->name('price_range.store');
+         Route::get('{id}/edit', [PriceRangeController::class, 'edit'])->where(['id' => '[0-9]+'])->name('price_range.edit');
+         Route::put('{id}/update', [PriceRangeController::class, 'update'])->where(['id' => '[0-9]+'])->name('price_range.update');
+         Route::delete('{id}/destroy', [PriceRangeController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('price_range.destroy');
+      });
+
 
       Route::group(['prefix' => 'attribute'], function () {
          Route::get('index', [AttributeController::class, 'index'])->name('attribute.index');
@@ -427,6 +458,11 @@ Route::group(['middleware' => 'license'], function () {
       Route::group(['prefix' => 'order'], function () {
          Route::get('index', [OrderController::class, 'index'])->name('order.index');
          Route::get('{id}/detail', [OrderController::class, 'detail'])->where(['id' => '[0-9]+'])->name('order.detail');
+         Route::put('update-order-status/{code}', [OrderController::class, 'updateStatus'])->name('update-order-status');
+         Route::get('create', [OrderController::class, 'create'])->name('customer.order.create');
+         Route::post('store', [OrderController::class, 'store'])->name('customer.order.store');
+
+
       });
 
       /*CRM*/
