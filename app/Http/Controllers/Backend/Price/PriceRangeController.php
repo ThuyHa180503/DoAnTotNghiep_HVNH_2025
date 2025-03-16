@@ -55,7 +55,7 @@ class PriceRangeController extends Controller
         ->orderBy(function($query) {
             $query->select('name')
                   ->from('product_catalogue_language')
-                  ->whereColumn('product_catalogue_language.product_catalogue_id', 'price_range.brand_id')
+                  ->whereColumn('product_catalogue_language.product_catalogue_id', 'price_range.product_brand_id')
                   ->limit(1);
         })
         ->paginate(5);

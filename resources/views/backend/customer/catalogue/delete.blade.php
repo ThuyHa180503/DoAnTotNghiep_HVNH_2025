@@ -9,8 +9,8 @@
                 <div class="panel-head">
                     <div class="panel-title">Thông tin chung</div>
                     <div class="panel-description">
-                        <p>Bạn đang muốn xóa nhóm khách hàng có tên là: <span class="text-danger">{{ $customerCatalogue->name }}</span></p>
-                        <p>Lưu ý: Không thể khôi phục nhóm khách hàng sau khi xóa. Hãy chắc chắn bạn muốn thực hiện chức năng này</p>
+                        <p>Bạn đang muốn xóa nhóm thành viên có tên là: <span class="text-danger">{{ $customerCatalogue->name }}</span></p>
+                        <p>Lưu ý: Không thể khôi phục nhóm thành viên sau khi xóa. Hãy chắc chắn bạn muốn thực hiện chức năng này</p>
                     </div>
                 </div>
             </div>

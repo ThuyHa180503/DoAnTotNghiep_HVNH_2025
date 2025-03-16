@@ -64,7 +64,7 @@ return [
                     'route' => 'price_group/index'
                 ],
                 [
-                    'title' => 'Ql Dải giá',
+                    'title' => 'QLL Dải giá',
                     'route' => 'price_range/index'
                 ],
                 [
@@ -105,6 +105,10 @@ return [
                 [
                     'title' => 'QL Cộng tác viên',
                     'route' => 'customer/index'
+                ],
+                [
+                    'title' => 'QL Cộng tác viên chờ duyệt',
+                    'route' => 'customer/wait/index'
                 ],
             ]
         ],

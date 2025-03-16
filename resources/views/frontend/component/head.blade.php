@@ -27,8 +27,10 @@
 <meta name="twitter:title" content="{{ $seo['meta_title'] }}" />
 <meta name="twitter:description" content="{{ $seo['meta_description'] }}" />
 <meta name="twitter:image" content="{{ $seo['meta_image'] }}" />
-
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
 <!-- <link href="backend/css/bootstrap.min.css" rel="stylesheet"> -->
 @php
     $coreCss = [

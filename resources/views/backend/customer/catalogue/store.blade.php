@@ -122,7 +122,6 @@ $url = ($config['method'] == 'create') ? route('customer.catalogue.store') : rou
                                     <small class="text-muted">Số tháng khách hàng cần duy trì điều kiện để giữ hạng</small>
                                 </div>
                             </div>
-                          
                         </div>
                     </div>
                     </div>
@@ -154,7 +153,7 @@ $url = ($config['method'] == 'create') ? route('customer.catalogue.store') : rou
                                 </div>
                             </div>
                         </div>
-
+                        <input type="text" name="publish" value="1" hidden>
                     <div class="col-lg-6">
                                 <div class="form-row">
                                     <label for="" class="control-label text-left">Nội dung quyền lợi</label>

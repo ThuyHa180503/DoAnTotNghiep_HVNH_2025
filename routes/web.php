@@ -22,6 +22,9 @@ use App\Http\Controllers\Backend\SlideController;
 use App\Http\Controllers\Backend\WidgetController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\Backend\OrderController;
+
+use App\Http\Controllers\Backend\BrandController;
+
 use App\Http\Controllers\Backend\Promotion\PromotionController;
 use App\Http\Controllers\Backend\ReviewController;
 use App\Http\Controllers\Ajax\LocationController;
@@ -240,6 +243,7 @@ Route::group(['middleware' => 'license'], function () {
       });
 
       Route::group(['prefix' => 'customer'], function () {
+         Route::get('wait/index', [CustomerController::class, 'indexWait'])->name('customer.wait.index');
          Route::get('index', [CustomerController::class, 'index'])->name('customer.index');
          Route::get('create', [CustomerController::class, 'create'])->name('customer.create');
          Route::post('store', [CustomerController::class, 'store'])->name('customer.store');
@@ -415,6 +419,19 @@ Route::group(['middleware' => 'license'], function () {
          Route::get('{id}/delete', [ProductController::class, 'delete'])->where(['id' => '[0-9]+'])->name('product.delete');
          Route::delete('{id}/destroy', [ProductController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('product.destroy');
       });
+
+      Route::group(['prefix' => 'product/brand'], function () {
+         Route::get('index', [BrandController::class, 'index'])->name('brand.index');
+         Route::get('create', [BrandController::class, 'create'])->name('brand.create');
+         Route::post('store', [BrandController::class, 'store'])->name('brand.store');
+         Route::get('{id}/edit', [BrandController::class, 'edit'])->where(['id' => '[0-9]+'])->name('brand.edit');
+         Route::post('{id}/update', [BrandController::class, 'update'])->where(['id' => '[0-9]+'])->name('brand.update');
+         Route::get('{id}/delete', [BrandController::class, 'delete'])->where(['id' => '[0-9]+'])->name('brand.delete');
+         Route::post('/update-status', [BrandController::class, 'updateStatus'])->name('update.status');
+
+         Route::delete('{id}/destroy', [BrandController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('brand.destroy');
+      });
+
       Route::group(['prefix' => 'attribute/catalogue'], function () {
          Route::get('index', [AttributeCatalogueController::class, 'index'])->name('attribute.catalogue.index');
          Route::get('create', [AttributeCatalogueController::class, 'create'])->name('attribute.catalogue.create');

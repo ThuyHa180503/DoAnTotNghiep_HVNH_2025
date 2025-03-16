@@ -3,7 +3,7 @@
         <tr>
             <th>
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
-            </th><th>Mã</th>
+            </th>
             <th>Họ Tên</th>
             <th>Email</th>
             <th>Số điện thoại</th>
@@ -20,10 +20,6 @@
         <tr>
             <td>
                 <input type="checkbox" value="{{ $customer->id }}" class="input-checkbox checkBoxItem">
-            </td>
-
-            <td>
-                {{ $customer->id }}
             </td>
             <td>
                 {{ $customer->name }}

@@ -172,6 +172,7 @@ if (!function_exists('getReview')) {
         $totalRate = number_format($product->reviews()->avg('score'), 1);
         $starPercent = ($totalReviews == 0) ? '0' : $totalRate / 5 * 100;
 
+
         return [
             'star' => $starPercent,
             'count' => $totalReviews,

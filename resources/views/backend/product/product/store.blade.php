@@ -21,6 +21,28 @@
                @include('backend.dashboard.component.seo', ['model' => ($product) ?? null])
             </div>
             <div class="col-lg-3">
+            <div class="ibox w">
+                <div class="ibox-title">
+                    <h5>CHỌN THƯƠNG HIỆU</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row mb15">
+                        <div class="col-lg-12">
+                            <div class="form-row">
+                                <select name="product_brand_id" class="form-control setupSelect2">
+                                    @foreach($product_brands as $brand)
+                                        <option value="{{ $brand->id }}" 
+                                            {{ old('product_brand_id', isset($brand->id) ? $brand->id : '') == $brand->id ? 'selected' : '' }}>
+                                            {{ $brand->brand_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
                 @include('backend.product.product.component.aside')
             </div>
         </div>

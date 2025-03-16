@@ -5,10 +5,10 @@
     <div class="panel-main-slide">
         <div class="uk-container uk-container-center">
             <div class="uk-grid uk-grid-medium">
-                <div class="uk-width-large-2-3">
+                <div class="uk-width-large">
                     @include('frontend.component.slide')
                 </div>
-                <div class="uk-width-large-1-3">
+                <!-- <div class="uk-width-large-1-3">
                     @if(count($slides['banner']['item']))
                     <div class="banner-wrapper">
                         <div class="uk-grid uk-grid-small">
@@ -22,7 +22,7 @@
                         </div>
                     </div>
                     @endif
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -30,11 +30,13 @@
     @if(isset($widgets['flash-sale']))
     <div class="panel-flash-sale" id="#flash-sale">
         <div class="uk-container uk-container-center">
-            <div class="main-heading">
-                <div class="panel-head">
-                    <h2 class="heading-1"><span>{{ $widgets['flash-sale']->name }}</span></h2>
+            <!-- <div class="main-heading">
+             
+            </div> -->
+            <div class="panel-head" style="text-align: center;">
+                    <!-- Lấy ra 10 sản phẩm mới nhất-->
+                    <h2 class="heading-1"><span style="color: #484848; text-align: center;">Sản phẩm mới</span></h2> 
                 </div>
-            </div>
             <div class="panel-body">
                 <div class="uk-grid uk-grid-medium">
                     @foreach ($widgets['flash-sale']->object as $key => $product)
@@ -57,7 +59,7 @@
             @endphp
             <div class="panel-product">
                 {{-- <style>
-                            .main-heading:before {
+                            /* .main-heading:before {
                                 filter: brightness(96%);
                                 content: '';
                                 display: block;
@@ -67,18 +69,17 @@
                                 width: 120px;
                                 height: 40px;
                             
-                                background-size: 100% !important;
-                                background: url({{ $system['homepage_logo'] }}) 100% no-repeat;
-                }
+                } */
                 </style> --}}
-                <div class="main-heading">
-                    <div class="panel-head">
-                        <div class="uk-flex uk-flex-middle uk-flex-space-between">
-                            <h2 class="heading-1"><a href="{{ $catCanonical }}" title="{{ $catName }}">{{ $catName }}</a></h2>
+                <!-- <div class="main-heading">
+                   
+                </div> -->
+                <div class="panel-head" style="text-align: center;">
+                        <div class="uk-flex uk-flex-middle uk-flex-space-between" style="text-align: center;">
+                            <h2 class="heading-1"><a href="{{ $catCanonical }}" title="{{ $catName }}" style="color: #484848;">{{ $catName }}</a></h2>
                             <a href="{{ $catCanonical }}" class="readmore">Tất cả sản phẩm</a>
                         </div>
                     </div>
-                </div>
                 <div class="panel-body">
                     @if(count($category->products))
                     <div class="uk-grid uk-grid-medium">
@@ -102,10 +103,13 @@
     $catName = $val->languages->first()->pivot->name;
     $catCanonical = write_url($val->languages->first()->pivot->canonical);
     @endphp
-    <div class="panel-news">
-        <div class="uk-container uk-container-center">
-            <div class="panel-head">
-                <h2 class="heading-2"><span><?php echo $catName ?></span></h2>
+    <div class="panel-news" style="text-align: center;">
+        <div class="uk-container uk-container-center" >
+            <div class="panel-head"  style="text-align: center; ">
+                <h2 class="heading-1" style="color: #484848;     text-transform: uppercase;
+    font-weight: 700;
+    font-size: 18px;
+"><span><?php echo $catName ?></span></h2>
             </div>
             <div class="panel-body">
                 @if(count($val->posts))

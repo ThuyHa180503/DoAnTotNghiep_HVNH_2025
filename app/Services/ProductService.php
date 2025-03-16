@@ -369,7 +369,8 @@ class ProductService extends BaseService implements ProductServiceInterface
             'attribute',
             'variant',
             'iframe',
-            'guarantee'
+            'guarantee',
+            'product_brand_id'
         ];
     }
 

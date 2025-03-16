@@ -35,6 +35,36 @@ class CustomerController extends Controller
         $this->customerCatalogueRepository = $customerCatalogueRepository;
         $this->sourceRepository = $sourceRepository;
     }
+
+    public function indexWait(Request $request)
+    {
+        $request->merge(['publish' => 1]); 
+        $this->authorize('modules', 'customer.index');
+        $customers = $this->customerService->paginate($request);
+
+        $customerCatalogues = $this->customerCatalogueRepository->all();
+        $config = [
+            'js' => [
+                'backend/js/plugins/switchery/switchery.js',
+                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+            ],
+            'css' => [
+                'backend/css/plugins/switchery/switchery.css',
+                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            ],
+            'model' => 'Customer'
+        ];
+        $config['seo'] = __('messages.customer');
+
+        $template = 'backend.customer.customer_wait.index';
+        return view('backend.dashboard.layout', compact(
+            'template',
+            'config',
+            'customers',
+            'customerCatalogues',
+        ));
+    }
+
     public function index(Request $request)
     {
         $this->authorize('modules', 'customer.index');
@@ -89,7 +119,6 @@ class CustomerController extends Controller
         }
         return redirect()->route('customer.index')->with('error', 'Thêm mới bản ghi không thành công. Hãy thử lại');
     }
-
     public function edit($id)
     {
         $this->authorize('modules', 'customer.update');

@@ -244,6 +244,7 @@ class CustomerController extends FrontendController
     $customer = new Customer();
     $customer->email = $request->email;
     $customer->name = $request->name;
+    $customer->publish=1;
     $customer->referral_by = $request->referral_by ?? null; 
     $customer->code = time();
     $customer->customer_catalogue_id = 1;

@@ -1,9 +1,9 @@
 <div id="header" class="pc-header uk-visible-large">
-    <div class="upper">
+    <!-- <div class="upper">
         <div class="uk-container uk-container-center">
             <div class="company-name">{{ $system['homepage_company'] }}</div>
         </div>
-    </div>
+    </div> -->
     <div class="middle">
         <div class="uk-container uk-container-center">
             <div class="uk-flex uk-flex-middle uk-flex-space-between">

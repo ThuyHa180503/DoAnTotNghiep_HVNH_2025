@@ -15,6 +15,7 @@ use App\Classes\Nestedsetbie;
 use App\Models\Language;
 use App\Models\Price_group;
 use App\Models\Price_range;
+use App\Models\ProductBrand;
 use App\Models\ProductCatalogue;
 
 class ProductController extends Controller
@@ -71,6 +72,7 @@ class ProductController extends Controller
             ],
             'model' => 'Product'
         ];
+        
         $config['seo'] = __('messages.product');
         $template = 'backend.product.product.index';
         $dropdown  = $this->nestedset->Dropdown();
@@ -78,7 +80,7 @@ class ProductController extends Controller
             'template',
             'config',
             'dropdown',
-            'products'
+            'products',
         ));
     }
 
@@ -88,6 +90,9 @@ class ProductController extends Controller
         $attributeCatalogue = $this->attributeCatalogue->getAll($this->language);
         $config = $this->configData();
         $config['seo'] = __('messages.product');
+        $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
+                    ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+                    ->get();
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
         $template = 'backend.product.product.store';
@@ -96,36 +101,37 @@ class ProductController extends Controller
             'dropdown',
             'config',
             'attributeCatalogue',
+            'product_brands'
         ));
     }
 
     public function store(StoreProductRequest $request)
     {
        
-        $brand_id = $request->product_catalogue_id;
-        $range = Price_range::where('brand_id', $brand_id)->first();
+        // $product_brand_id = $request->product_brand_id;
+        // $range = Price_range::where('product_brand_id', $product_brand_id)->first();
     
-        $final_price = (float) str_replace('.', '', $request->price);
-        if (!empty($request->catalogue)) {
-            $price_group = Price_group::where('brand_id', $brand_id)
-                ->whereIn('product_catalogue_id', $request->catalogue)
-                ->first(); 
-            if ($price_group) { 
-                $final_price -= ($final_price * ($price_group->discount/100)); 
-                $final_price=$final_price*$price_group->exchange_rate;
-            }
+        // $final_price = (float) str_replace('.', '', $request->price);
+        // if (!empty($request->catalogue)) {
+        //     $price_group = Price_group::where('product_brand_id', $product_brand_id)
+        //         ->whereIn('product_catalogue_id', $request->catalogue)
+        //         ->first(); 
+        //     if ($price_group) { 
+        //         $final_price -= ($final_price * ($price_group->discount/100)); 
+        //         $final_price=$final_price*$price_group->exchange_rate;
+        //     }
            
-        }
-            if ($range->range_from <= $final_price && $final_price <= $range->range_to) {
-                if ($range->value_type == "percentage") {
+        // }
+        //     if ($range->range_from <= $final_price && $final_price <= $range->range_to) {
+        //         if ($range->value_type == "percentage") {
                     
-                    $final_price = $final_price - ($final_price * ($range->value / 100));
-                } elseif ($range->value_type == "fixed") {
-                    $final_price = $final_price - $range->value;
-                }
-            }
+        //             $final_price = $final_price - ($final_price * ($range->value / 100));
+        //         } elseif ($range->value_type == "fixed") {
+        //             $final_price = $final_price - $range->value;
+        //         }
+        //     }
 
-        $request->merge(['price' => $final_price]);        
+        // $request->merge(['price' => $final_price]);        
         if ($this->productService->create($request, $this->language)) {
             return redirect()->route('product.index')->with('success', 'Thêm mới bản ghi thành công');
         }
