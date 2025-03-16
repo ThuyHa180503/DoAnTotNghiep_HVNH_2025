@@ -4,7 +4,8 @@
             <th>
                 <input type="checkbox" value="" id="checkAll" class="input-checkbox">
             </th>
-            <th>Tên loại cộng tác viên</th>
+            <th>Mã</th>
+            <th>Tên nhóm khách hàng</th>
             <th class="text-center">Phần trăm giảm</th>
             <th class="text-center">Điều kiện</th>
             <th>Mô tả</th>
@@ -18,6 +19,9 @@
         <tr>
             <td>
                 <input type="checkbox" value="{{ $customerCatalogue->id }}" class="input-checkbox checkBoxItem">
+            </td>
+            <td>
+                {{ $customerCatalogue->id }}
             </td>
             <td>
                 {{ $customerCatalogue->name }}
