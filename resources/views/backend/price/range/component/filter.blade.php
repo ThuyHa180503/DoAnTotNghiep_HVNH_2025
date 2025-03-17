@@ -1,4 +1,4 @@
-<form action="{{ route('price_group.index') }}">
+<form action="{{ route('price_range.index') }}">
     <div class="filter-wrapper">
         <div class="uk-flex uk-flex-middle uk-flex-space-between">
             @include('backend.dashboard.component.perpage')

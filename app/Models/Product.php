@@ -29,7 +29,8 @@ class Product extends Model
         'qrcode',
         'warranty',
         'check',
-        'product_brand_id'
+        'product_brand_id',
+        'order'
     ];
 
     protected $casts = [

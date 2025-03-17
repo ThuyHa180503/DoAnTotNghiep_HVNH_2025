@@ -17,6 +17,7 @@ use App\Models\Price_group;
 use App\Models\Price_range;
 use App\Models\ProductBrand;
 use App\Models\ProductCatalogue;
+use App\Models\Sub_brand;
 
 class ProductController extends Controller
 {
@@ -90,48 +91,60 @@ class ProductController extends Controller
         $attributeCatalogue = $this->attributeCatalogue->getAll($this->language);
         $config = $this->configData();
         $config['seo'] = __('messages.product');
-        $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
-                    ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
-                    ->get();
+        $brands = ProductBrand::select(
+            'product_brands.*', 
+            'product_brand_language.*'
+        )
+        ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+        ->get();
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
         $template = 'backend.product.product.store';
+        $sub_brands=Sub_brand::all();
         return view('backend.dashboard.layout', compact(
             'template',
             'dropdown',
             'config',
             'attributeCatalogue',
-            'product_brands'
+            'brands',
+            'sub_brands'
         ));
     }
 
     public function store(StoreProductRequest $request)
     {
+        //dd($request->all());
        
-        // $product_brand_id = $request->product_brand_id;
-        // $range = Price_range::where('product_brand_id', $product_brand_id)->first();
-    
-        // $final_price = (float) str_replace('.', '', $request->price);
-        // if (!empty($request->catalogue)) {
-        //     $price_group = Price_group::where('product_brand_id', $product_brand_id)
-        //         ->whereIn('product_catalogue_id', $request->catalogue)
-        //         ->first(); 
-        //     if ($price_group) { 
-        //         $final_price -= ($final_price * ($price_group->discount/100)); 
-        //         $final_price=$final_price*$price_group->exchange_rate;
-        //     }
-           
-        // }
-        //     if ($range->range_from <= $final_price && $final_price <= $range->range_to) {
-        //         if ($range->value_type == "percentage") {
-                    
-        //             $final_price = $final_price - ($final_price * ($range->value / 100));
-        //         } elseif ($range->value_type == "fixed") {
-        //             $final_price = $final_price - $range->value;
-        //         }
-        //     }
+        $product_brand_id = $request->product_brand_id;
+        $sub_brand_id = $request->sub_brand_id; 
+        $product_catalogue_id = $request->product_catalogue_id;
+        $final_price=$request->price;
+        $price_group = Price_group::where('product_brand_id', $product_brand_id)
+            ->where('sub_brand_id', $sub_brand_id)
+            ->where('product_catalogue_id', $product_catalogue_id)
+            ->first();
 
-        // $request->merge(['price' => $final_price]);        
+            if ($price_group) {
+                $final_price = $final_price + $final_price * ($price_group->discount / 100);
+            
+                $range = Price_range::where('sub_brand_id', $sub_brand_id)
+                    ->where('price_min', '<=', $final_price)
+                    ->where('price_max', '>=', $final_price)
+                    ->first(); 
+            
+                if ($range) {
+                    $value_type = $range->value_type;
+                    $value = $range->value;
+                    if ($value_type === 'fixed') {
+                        $final_price = $final_price - $value; 
+                    } elseif ($value_type === 'percentage') {
+                        $final_price = $final_price - ($final_price * ($value / 100)); 
+                    }
+                }
+            }
+
+
+        $request->merge(['price' => $final_price]);        
         if ($this->productService->create($request, $this->language)) {
             return redirect()->route('product.index')->with('success', 'Thêm mới bản ghi thành công');
         }
@@ -140,6 +153,9 @@ class ProductController extends Controller
 
     public function edit($id, Request $request)
     {
+        $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
+                    ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+                    ->get();
         $this->authorize('modules', 'product.update');
         $product = $this->productRepository->getProductById($id, $this->language);
         $attributeCatalogue = $this->attributeCatalogue->getAll($this->language);
@@ -157,7 +173,8 @@ class ProductController extends Controller
             'product',
             'album',
             'attributeCatalogue',
-            'queryUrl'
+            'queryUrl',
+            'product_brands'
         ));
     }
 

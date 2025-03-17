@@ -14,10 +14,11 @@ class Price_group extends Model
     protected $fillable = [
         'name',
         'product_catalogue_id',
-        'brand_id',
+        'product_brand_id',
         'discount',
         'shipping',
-        'exchange_rate'
+        'exchange_rate',
+        'sub_brand_id',
     ];
 
     public function catalogue()

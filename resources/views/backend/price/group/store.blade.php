@@ -1,6 +1,6 @@
 @include('backend.dashboard.component.breadcrumb', ['title' => 'Thêm mới nhóm giá'])
 @include('backend.dashboard.component.formError')
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <form action="{{ route('price_group.store') }}" method="post" class="box">
     @csrf
     <div class="wrapper wrapper-content animated fadeInRight">
@@ -42,19 +42,31 @@
                             <div class="col-lg-12">
                                 <div class="form-row">
                                     <label class="control-label">Chọn thương hiệu</label>
-                                    <select name="brand_id" class="form-control setupSelect2">
+                                    <select name="product_brand_id" class="form-control setupSelect2" id="brandSelect">
                                         <option value="">-- Chọn thương hiệu --</option>
                                         @foreach($brands as $brand)
                                             <option 
-                                                {{ old('brand_id') == $brand->id ? 'selected' : '' }} 
+                                                {{ old('product_brand_id') == $brand->id ? 'selected' : '' }} 
                                                 value="{{ $brand->id }}">
-                                                {{ optional($brand->product_catalogue_language->first())->name ?? 'Không có tên' }}
+                                                {{ $brand->name ?? 'Không có tên' }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="row">
+    <div class="col-lg-12">
+        <div class="form-row">
+            <label class="control-label">Chọn giải giá</label>
+            <select name="sub_brand_id" class="form-control setupSelect2" id="subBrandSelect" style="display: none;">
+                <option value="">-- Chọn giải giá --</option>
+            </select>
+        </div>
+    </div>
+</div>
+
 
                         <div class="row">
                             <div class="col-lg-12">
@@ -90,3 +102,33 @@
         @include('backend.dashboard.component.button')
     </div>
 </form>
+
+<script>
+$(document).ready(function () {
+    let subBrands = @json($sub_brands); 
+
+    $('#brandSelect').change(function () {
+        let selectedBrand = $(this).val();
+        let subBrandSelect = $('#subBrandSelect');
+        subBrandSelect.empty().append('<option value="">-- Chọn giải giá --</option>');
+
+        if (selectedBrand) {
+            let filteredSubBrands = subBrands.filter(sub => sub.brand_id == selectedBrand);
+
+            if (filteredSubBrands.length > 0) {
+                filteredSubBrands.forEach(sub => {
+                    subBrandSelect.append(`<option value="${sub.id}">${sub.name ?? 'Không có tên'}</option>`);
+                });
+                subBrandSelect.show();
+            } else {
+                subBrandSelect.hide();
+            }
+        } else {
+            subBrandSelect.hide();
+        }
+    });
+    $('#brandSelect').trigger('change');
+});
+
+
+</script>

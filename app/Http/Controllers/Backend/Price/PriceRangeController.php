@@ -10,7 +10,11 @@ use App\Classes\Nestedsetbie;
 use App\Models\Language;
 use App\Models\Price_group;
 use App\Models\Price_range;
+use App\Models\ProductBrand;
 use App\Models\ProductCatalogue;
+use App\Models\Sub_brand;
+use Illuminate\Support\Facades\DB;
+
 class PriceRangeController extends Controller
 {
     /**
@@ -51,14 +55,18 @@ class PriceRangeController extends Controller
     } 
  
     public function index(Request $request){
-        $price_ranges = Price_range::with('brand')
-        ->orderBy(function($query) {
-            $query->select('name')
-                  ->from('product_catalogue_language')
-                  ->whereColumn('product_catalogue_language.product_catalogue_id', 'price_range.product_brand_id')
-                  ->limit(1);
-        })
-        ->paginate(5);
+        $perPage = $request->perpage ?? 20; 
+        $price_ranges = Price_range::select(
+            'price_ranges.id as price_range_id', 
+            'sub_brands.id as sub_brand_id',    
+            'price_ranges.*', 
+            'product_brand_language.name as brand_name',  
+            'sub_brands.name as sub_name' 
+        )
+        ->leftJoin('sub_brands', 'price_ranges.sub_brand_id', '=', 'sub_brands.id') 
+        ->leftJoin('product_brand_language', 'sub_brands.brand_id', '=', 'product_brand_language.product_brand_id') 
+        ->orderBy('product_brand_language.name') 
+        ->paginate($perPage);
     
         $config = [
             'js' => [
@@ -95,8 +103,13 @@ class PriceRangeController extends Controller
         $config['seo'] = __('messages.attributeCatalogue');
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
-
-        $brands=ProductCatalogue::with('product_catalogue_language')->where('parent_id',22)->get();
+        $brands = ProductBrand::select(
+            'product_brands.*', 
+            'product_brand_language.*'
+        )
+        ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+        ->get();
+        
         //dd($categorys);
         $template = 'backend.price.range.store';
         return view('backend.dashboard.layout', compact(
@@ -106,18 +119,49 @@ class PriceRangeController extends Controller
             'brands'
         ));
     }
-    /**
-     * Display the specified resource.
-     */
-    public function store(Request $request)
-     {
-       //dd($request->all());
-        $data=$request->except('send');
-        if(Price_range::create($data)){
-            return redirect()->route('price_range.index')->with('success','Thêm mới bản ghi thành công');
+public function store(Request $request)
+{
+    $request->validate([
+        'brand_id' => 'required',
+        'range_name' => 'required|string|max:255',
+        'ranges_data' => 'required|json',
+    ]);
+
+    $ranges = json_decode($request->ranges_data, true);
+
+    try {
+        DB::beginTransaction(); // Bắt đầu transaction
+
+        // 1️⃣ Lưu sub_brand trước
+        $subBrand = Sub_brand::create([
+            'brand_id' => $request->brand_id,
+            'name' => $request->range_name ?? 'Không xác định',
+        ]);
+        
+        $level = 1; 
+
+        foreach ($ranges as $range) {
+            Price_range::create([
+                'sub_brand_id' => $subBrand->id, 
+                'name' => 'Mức ' . $level,
+                'range_from' => $range['from'],
+                'range_to' => $range['to'],
+                'value_type' => $range['valueType'],
+                'value' => $range['value'],
+            ]);
+            $level++;
         }
-        return back()->with('error','Thêm mới bản ghi thất bại');
+
+        DB::commit(); 
+
+        return redirect()->route('price_range.index')->with('success', 'Thêm mới bản ghi thành công');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        dd($e);
+        return back()->with('error', 'Lỗi khi thêm dữ liệu: ' . $e->getMessage());
     }
+}
+
 
     /**
      * Show the form for editing the specified resource.
@@ -139,14 +183,13 @@ class PriceRangeController extends Controller
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
         $price_range = Price_range::findOrfail($id);
-        $brands=ProductCatalogue::with('product_catalogue_language')->where('parent_id',22)->get();
+        //dd($price_range);
         //dd($categorys);
         $template = 'backend.price.range.edit';
         return view('backend.dashboard.layout', compact(
             'template',
             'dropdown',
             'config',
-            'brands',
             'price_range'
         ));
     }
@@ -169,7 +212,7 @@ class PriceRangeController extends Controller
     public function destroy(string $id)
     {
         if(Price_range::findOrfail($id)->delete()){
-            return redirect()->route('price_group.index')->with('success','Xoá bản ghi thành công');
+            return redirect()->route('price_range.index')->with('success','Xoá bản ghi thành công');
         }
         return back()->with('error','Xoá bản ghi thất bại');
     }

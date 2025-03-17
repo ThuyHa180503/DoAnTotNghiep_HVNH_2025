@@ -8,7 +8,10 @@ use App\Repositories\Interfaces\AttributeCatalogueRepositoryInterface  as Attrib
 use App\Classes\Nestedsetbie;
 use App\Models\Language;
 use App\Models\Price_group;
+use App\Models\ProductBrand;
 use App\Models\ProductCatalogue;
+use App\Models\Sub_brand;
+use Illuminate\Support\Facades\DB;
 
 class PriceGroupController extends Controller
 {
@@ -48,9 +51,23 @@ class PriceGroupController extends Controller
             'language_id' =>  $this->language,
         ]);
     } 
- 
     public function index(Request $request){
-       $price_groups=Price_group::with('brand','catalogue')->paginate(5);
+        $perPage = $request->perpage ?? 20; 
+
+$price_groups = DB::table('price_group')
+    ->leftJoin('product_brand_language', 'price_group.product_brand_id', '=', 'product_brand_language.product_brand_id')
+    ->leftJoin('product_catalogue_language', 'price_group.product_catalogue_id', '=', 'product_catalogue_language.product_catalogue_id')
+    ->leftJoin('sub_brands', 'price_group.sub_brand_id', '=', 'sub_brands.id')
+    ->select(
+        'price_group.*',
+        'product_brand_language.name as brand_name',
+        'product_catalogue_language.name as catalogue_name',
+        'sub_brands.name as sub_brand_name'
+    )
+    ->paginate($perPage);
+
+
+
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -88,14 +105,23 @@ class PriceGroupController extends Controller
         $dropdown  = $this->nestedset->Dropdown();
 
         $categorys=ProductCatalogue::with('product_catalogue_language')->where('parent_id',45)->get();
-        $brands=ProductCatalogue::with('product_catalogue_language')->where('parent_id',22)->get();
+        $brands = ProductBrand::select(
+            'product_brands.*', 
+            'product_brand_language.*'
+        )
+        ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+        ->get();
+        
+        $sub_brands=Sub_brand::all();
+        
         $template = 'backend.price.group.store';
         return view('backend.dashboard.layout', compact(
             'template',
             'dropdown',
             'config',
             'categorys',
-            'brands'
+            'brands',
+            'sub_brands'
         ));
     }
     /**
@@ -103,7 +129,7 @@ class PriceGroupController extends Controller
      */
     public function store(Request $request)
      {
-    //     dd($request->all());
+        
         $data=$request->except('send');
         if(Price_group::create($data)){
             return redirect()->route('price_group.index')->with('success','Thêm mới bản ghi thành công');
@@ -116,6 +142,20 @@ class PriceGroupController extends Controller
      */
     public function edit(string $id)
     {
+        $price_group = DB::table('price_group')
+    ->leftJoin('product_brand_language', 'price_group.product_brand_id', '=', 'product_brand_language.product_brand_id')
+    ->leftJoin('product_catalogue_language', 'price_group.product_catalogue_id', '=', 'product_catalogue_language.product_catalogue_id')
+    ->leftJoin('sub_brands', 'price_group.sub_brand_id', '=', 'sub_brands.id')
+    ->select(
+        'price_group.*',
+        'product_brand_language.name as brand_name',
+        'product_catalogue_language.name as catalogue_name',
+        'sub_brands.name as sub_brand_name'
+    )
+    ->where('price_group.id', $id)
+    ->first();
+
+
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -130,7 +170,6 @@ class PriceGroupController extends Controller
         $config['seo'] = __('messages.attributeCatalogue');
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
-        $price_group = Price_group::findOrfail($id);
         $categorys=ProductCatalogue::with('product_catalogue_language')->where('parent_id',45)->get();
         $brands=ProductCatalogue::with('product_catalogue_language')->where('parent_id',22)->get();
         //dd($categorys);

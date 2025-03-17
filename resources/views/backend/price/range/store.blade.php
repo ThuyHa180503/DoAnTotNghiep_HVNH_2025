@@ -10,20 +10,9 @@
                     <div class="ibox-title">
                         <h5>Thông tin dải giá</h5>
                     </div>
+                    
                     <div class="ibox-content">
-                        
-                        <!-- Tên Dải Giá -->
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label class="control-label">Tên dải giá</label>
-                                    <input type="text" name="range_name" class="form-control" value="{{ old('range_name') }}" placeholder="Nhập tên dải giá">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Chọn Thương Hiệu -->
-                        <div class="row">
+                    <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
                                     <label class="control-label">Chọn thương hiệu</label>
@@ -33,13 +22,23 @@
                                             <option 
                                                 {{ old('brand_id') == $brand->id ? 'selected' : '' }} 
                                                 value="{{ $brand->id }}">
-                                                {{ optional($brand->product_catalogue_language->first())->name ?? 'Không có tên' }}
+                                                {{ $brand->name ?? 'Không có tên' }}
                                             </option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group">
+                                    <label class="control-label">Tên dải giá</label>
+                                    <input type="text" name="range_name" class="form-control" value="{{ old('range_name') }}" placeholder="Nhập tên dải giá">
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="ranges_data" id="ranges_data">
 
                         <!-- Nhập khoảng giá -->
                         <div class="row">
@@ -87,6 +86,7 @@
                                     <th>Dải giá đến</th>
                                     <th>Loại giá trị</th>
                                     <th>Giá trị</th>
+                                    <th>Hành động</th>
                                 </tr>
                             </thead>
                             <tbody id="ranges_list"></tbody>
@@ -104,39 +104,51 @@
     let ranges = []; // Lưu danh sách các khoảng giá
 
     function validateRange() {
-        let from = parseFloat(document.getElementById("range_from").value);
-        let to = parseFloat(document.getElementById("range_to").value);
-        let valueType = document.querySelector('select[name="value_type"]').value;
-        let value = parseFloat(document.querySelector('input[name="value"]').value);
+    let from = parseFloat(document.getElementById("range_from").value);
+    let to = parseFloat(document.getElementById("range_to").value);
+    let valueType = document.querySelector('select[name="value_type"]').value;
+    let value = parseFloat(document.querySelector('input[name="value"]').value);
 
-        if (isNaN(from) || isNaN(to) || from >= to) {
-            alert("Khoảng giá không hợp lệ! Giá trị bắt đầu phải nhỏ hơn giá trị kết thúc.");
-            return;
-        }
-
-        if (isNaN(value)) {
-            alert("Vui lòng nhập giá trị hợp lệ.");
-            return;
-        }
-
-        // Kiểm tra khoảng giá có bị chồng lấn không
-        for (let range of ranges) {
-            if (!(to <= range.from || from >= range.to)) {
-                alert(`Khoảng giá bị chồng lấn với: ${range.from} - ${range.to}`);
-                return;
-            }
-        }
-
-        // Nếu hợp lệ, thêm vào danh sách
-        ranges.push({ from, to, valueType, value });
-
-        renderRanges();
-
-        // Reset input
-        document.getElementById("range_from").value = "";
-        document.getElementById("range_to").value = "";
-        document.querySelector('input[name="value"]').value = "";
+    if (isNaN(from) || isNaN(to) || from >= to) {
+        alert("Khoảng giá không hợp lệ! Giá trị bắt đầu phải nhỏ hơn giá trị kết thúc.");
+        return;
     }
+
+    if (isNaN(value)) {
+        alert("Vui lòng nhập giá trị hợp lệ.");
+        return;
+    }
+
+    // Kiểm tra khoảng giá có bị chồng lấn không
+    for (let range of ranges) {
+        if (!(to <= range.from || from >= range.to)) {
+            alert(`Khoảng giá bị chồng lấn với: ${range.from} - ${range.to}`);
+            return;
+        }
+    }
+
+    // Nếu hợp lệ, thêm vào danh sách
+    ranges.push({ from, to, valueType, value });
+
+    renderRanges();
+
+    // Cập nhật input hidden
+    document.getElementById("ranges_data").value = JSON.stringify(ranges);
+
+    // Reset input
+    document.getElementById("range_from").value = "";
+    document.getElementById("range_to").value = "";
+    document.querySelector('input[name="value"]').value = "";
+}
+
+function removeRange(index) {
+    ranges.splice(index, 1);
+    renderRanges();
+
+    // Cập nhật input hidden
+    document.getElementById("ranges_data").value = JSON.stringify(ranges);
+}
+
 
     function removeRange(index) {
         ranges.splice(index, 1);

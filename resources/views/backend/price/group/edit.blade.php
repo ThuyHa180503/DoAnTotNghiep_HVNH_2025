@@ -24,40 +24,34 @@
                         </div>
 
                         <div class="row mb15">
-                            <div class="col-lg-12">
-                                <div class="form-row">
-                                    <label class="control-label">Chọn danh mục</label>
-                                    <select name="product_catalogue_id" class="form-control setupSelect2">
-                                        <option value="">-- Chọn danh mục --</option>
-                                        @foreach($categorys as $category)
-                                            <option 
-                                                value="{{ $category->id }}"
-                                                {{ old('product_catalogue_id', $price_group->product_catalogue_id) == $category->id ? 'selected' : '' }}>
-                                                {{ optional($category->product_catalogue_language->first())->name ?? 'Không có tên' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+    <div class="col-lg-12">
+        <div class="form-row">
+            <label class="control-label">Danh mục</label>
+<input type="text" name="catalogue_name" readonly class="form-control" value="{{ $price_group->catalogue_name }}">
 
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="form-row">
-                                    <label class="control-label">Chọn thương hiệu</label>
-                                    <select name="brand_id" class="form-control setupSelect2">
-                                        <option value="">-- Chọn thương hiệu --</option>
-                                        @foreach($brands as $brand)
-                                            <option 
-                                                value="{{ $brand->id }}"
-                                                {{ old('brand_id', $price_group->brand_id) == $brand->id ? 'selected' : '' }}>
-                                                {{ optional($brand->product_catalogue_language->first())->name ?? 'Không có tên' }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="form-row">
+            <label class="control-label">Thương hiệu</label>
+            <input type="text" class="form-control" value="{{ $price_group->brand_name }}" readonly>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="form-row">
+            <label class="control-label">Dải giá</label>
+            <input type="text" class="form-control" value="{{ $price_group->sub_brand_name }}" readonly>
+        </div>
+    </div>
+</div>
+
 
                         <div class="row">
                             <div class="col-lg-12">

@@ -64,7 +64,7 @@ return [
                     'route' => 'price_group/index'
                 ],
                 [
-                    'title' => 'QLL Dải giá',
+                    'title' => 'Ql Dải giá',
                     'route' => 'price_range/index'
                 ],
                 [
