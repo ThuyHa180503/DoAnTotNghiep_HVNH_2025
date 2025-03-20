@@ -161,7 +161,7 @@
                         <a href="#mobileCanvas" class="mobile-menu-button" data-uk-offcanvas>
                             <svg xmlns="http://www.w3.org/2000/svg"
                                 width="100%" height="100%" preserveAspectRatio="none"
-                                viewBox="0 0 1536 1896.0833" class="" fill="rgb(218,34,41)">
+                                viewBox="0 0 1536 1896.0833" class="" fill="#7A95A2">
                                 <path d="M1536 1344v128q0 26-19 45t-45 19H64q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19H64q-26 0-45-19T0 960V832q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19H64q-26 0-45-19T0 448V320q0-26 19-45t45-19h1408q26 0 45 19t19 45z"></path>
                             </svg>
                         </a>

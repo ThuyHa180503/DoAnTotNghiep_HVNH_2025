@@ -120,6 +120,7 @@ class AuthController extends FrontendController
 
     public function changePassword(Request $request)
     {
+        
         $email = base64_decode(rtrim(urldecode($request->getQueryString('email')), '='));
         $customer = Customer::where('email', $email)->first();
 
@@ -141,6 +142,9 @@ class AuthController extends FrontendController
             $request->session()->regenerate();
             return redirect()->route('home.index')->with('success', 'Đăng nhập thành công');
         }
-        return redirect()->route('home.index')->with('error', 'Email hoặc Mật khẩu không chính xác');
+        return back()->withInput()->with('error', 'Email hoặc Mật khẩu không chính xác');
+
+        // return redirect()->route('home.index')->with('error', 'Email hoặc Mật khẩu không chính xác');
     }
+    
 }

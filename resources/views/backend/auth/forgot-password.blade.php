@@ -3,9 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thông quản trị A'nista</title>
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
-
+    <title>Quên mật khẩu - Hệ thông quản trị A'nista</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&display=swap" rel="stylesheet">
 
     <link href="{{ asset('backend/css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('backend/font-awesome/css/font-awesome.css') }}" rel="stylesheet">
@@ -46,11 +45,6 @@
             padding: 40px;
             background-color: white;
         }
-        .login-illustration {
-            max-width: 100%;
-            height: auto;
-            margin-bottom: 20px;
-        }
         .form-control {
             height: 50px;
             background-color: #f5f7fa;
@@ -74,50 +68,23 @@
             background-color:#BAD4E3;
             transform: translateY(-2px);
         }
-        .social-login {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-            gap: 15px;
-        }
-        .social-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            transition: all 0.3s;
-        }
-        .social-btn:hover {
-            transform: translateY(-3px);
-        }
-        .facebook {
-            background-color: #3b5998;
-        }
-        .twitter {
-            background-color: #1da1f2;
-        }
-        .google {
-            background-color: #ea4335;
-        }
         .login-footer {
             text-align: center;
             margin-top: 20px;
             color: #888;
             font-size: 12px;
         }
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+        .back-to-login {
+            text-align: center;
+            margin-top: 20px;
         }
-        .forgot-link {
+        .back-to-login a {
             color:#7A95A2;
             text-decoration: none;
             font-weight: bold;
+        }
+        .back-to-login a:hover {
+            text-decoration: underline;
         }
         .error-message {
             color: #ea4335;
@@ -126,25 +93,14 @@
             margin-bottom: 15px;
             display: block;
         }
-        h1 {
-            font-weight: 700;
+        .success-message {
+            color: #28a745;
+            font-size: 14px;
+            padding: 10px;
+            background-color: #d4edda;
+            border-radius: 5px;
             margin-bottom: 20px;
-            color: #333;
-        }
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 30px 0;
-            color: #888;
-        }
-        .divider::before, .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #eee;
-        }
-        .divider span {
-            padding: 0 10px;
+            display: block;
         }
         @media (max-width: 768px) {
             .login-card {
@@ -162,57 +118,48 @@
             font-weight: 500;
             text-align: center;
             letter-spacing: 3px;">A'nista</h1>
-            <P style="
+            <p style="
             font-size: 13px;
             font-weight: bolder;
             text-align: center;
             letter-spacing: 3px;
-            margin-bottom: 100px;">THỜI TRANG ĐỈNH CAO - DẪN ĐẦU XU HƯỚNG</P>
+            margin-bottom: 100px;">THỜI TRANG ĐỈNH CAO - DẪN ĐẦU XU HƯỚNG</p>
              
             </div>
             <div class="login-right">
-                <h1 style="text-align: center;">Đăng nhập</h1>
-                <p>Chào mừng thành viên của A'nista!</p>
-             
-                <form method="post" role="form" action="{{ route('auth.login') }}">
+                <h1 style="text-align: center;">Quên mật khẩu</h1>
+                <p>Vui lòng nhập email của bạn để lấy lại mật khẩu.</p>
+                
+                @if (session('status'))
+                    <div class="success-message">
+                        {{ session('status') }}
+                    </div>
+                @endif
+                
+                <form method="post" action="{{ route('password.email') }}">
                     @csrf
                     <div class="form-group">
                         <input
-                            type="text"
+                            type="email"
                             name="email"
                             class="form-control"
                             placeholder="Email"
                             autofocus
                             value="{{ old('email') }}"
+                            required
                         >
                         @if ($errors->has('email'))
                             <span class="error-message">* {{ $errors->first('email') }}</span>
                         @endif
                     </div>
-                    <div class="form-group">
-                        <input
-                            type="password"
-                            name="password"
-                            class="form-control"
-                            placeholder="Mật khẩu"
-                        >
-                        @if ($errors->has('password'))
-                            <span class="error-message">* {{ $errors->first('password') }}</span>
-                        @endif
-                    </div>
                    
-                    <div class="remember-forgot">
-    <div>
-        <input type="checkbox" id="remember" name="remember">
-        <label for="remember">Ghi nhớ tôi</label>
-    </div>
-    <a href="{{ route('password.request') }}" class="forgot-link">Quên mật khẩu?</a>
-</div>
-
-
-                   
-                    <button type="submit" class="btn btn-login">Đăng nhập</button>
+                    <button type="submit" class="btn btn-login">Gửi link lấy lại mật khẩu</button>
                 </form>
+                
+                <div class="back-to-login">
+                    <button  onclick="goBack()" style="border: none; background-color: white; color: #7A95A2;">Quay lại trang đăng nhập</button>
+                </div>
+                
                 <div class="login-footer">
                     Copyright nhóm 2 - HVNH | <small>© 2025</small>
                 </div>
@@ -222,26 +169,7 @@
 </body>
 </html>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Kiểm tra xem localStorage có lưu email không
-        if (localStorage.getItem("rememberEmail")) {
-            document.querySelector("input[name='email']").value = localStorage.getItem("rememberEmail");
-            document.querySelector("#remember").checked = true;
-        }
-
-
-        // Khi form được submit
-        document.querySelector("form").addEventListener("submit", function () {
-            if (document.querySelector("#remember").checked) {
-                // Lưu email vào localStorage nếu checkbox được chọn
-                localStorage.setItem("rememberEmail", document.querySelector("input[name='email']").value);
-            } else {
-                // Xóa email khỏi localStorage nếu checkbox không được chọn
-                localStorage.removeItem("rememberEmail");
-            }
-        });
-    });
+    function goBack() {
+        window.history.back();
+    }
 </script>
-
-
-

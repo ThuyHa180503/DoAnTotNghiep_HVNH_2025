@@ -537,9 +537,18 @@ Route::group(['middleware' => 'license'], function () {
       Route::post('ajax/product/deleteProduct', [AjaxConstructController::class, 'deleteProduct'])->name('ajax.product.deleteProduct');
       Route::get('ajax/dashboard/findInformationObject', [AjaxDashboardController::class, 'findInformationObject'])->name('ajax.findInformationObject');
    });
-   Route::get('admin', [AuthController::class, 'index'])->name('auth.admin')->middleware('login');
-   Route::get('logout', [AuthController::class, 'logout'])->name('auth.logout');
-   Route::post('login', [AuthController::class, 'login'])->name('auth.login');
+// Route cho admin dashboard
+Route::get('admin', [AuthController::class, 'index'])->name('auth.admin')->middleware('login');
+
+// Route cho chức năng quên mật khẩu
+Route::get('/forgot-password', [App\Http\Controllers\Backend\Auth\ForgotPasswordController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/forgot-password', [App\Http\Controllers\Backend\Auth\ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [App\Http\Controllers\Backend\Auth\ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [App\Http\Controllers\Backend\Auth\ResetPasswordController::class, 'resetPassword'])->name('password.update');
+
+// Route cho đăng nhập/đăng xuất
+Route::get('logout', [AuthController::class, 'logout'])->name('auth.logout');
+Route::post('login', [AuthController::class, 'login'])->name('auth.login');
 });
 
 
