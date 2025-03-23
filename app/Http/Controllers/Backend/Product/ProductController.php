@@ -15,6 +15,7 @@ use App\Classes\Nestedsetbie;
 use App\Models\Language;
 use App\Models\Price_group;
 use App\Models\Price_range;
+use App\Models\Product;
 use App\Models\ProductBrand;
 use App\Models\ProductCatalogue;
 use App\Models\Sub_brand;
@@ -58,6 +59,26 @@ class ProductController extends Controller
         ]);
     }
 
+    public function togglePublish(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $currentPublish = $product->publish; 
+        $newPublish = $request->publish; 
+        
+        if ($currentPublish == 1 && $newPublish == 2) {
+            $hasStock = $product->product_variants()->where('quantity', '>', 0)->exists();
+    
+            if (!$hasStock) {
+                return redirect()->back()->with('error', 'Sản phẩm không có hàng, không thể hiển thị.');
+            }
+        }
+    
+        $product->update(['publish' => $newPublish]);
+    
+        return redirect()->back()->with('success', 'Cập nhật trạng thái thành công.');
+    }
+    
+
     public function index(Request $request)
     {
         $this->authorize('modules', 'product.index');
@@ -73,7 +94,6 @@ class ProductController extends Controller
             ],
             'model' => 'Product'
         ];
-        
         $config['seo'] = __('messages.product');
         $template = 'backend.product.product.index';
         $dropdown  = $this->nestedset->Dropdown();
@@ -153,9 +173,13 @@ class ProductController extends Controller
 
     public function edit($id, Request $request)
     {
-        $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
-                    ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
-                    ->get();
+        $brands = ProductBrand::select(
+            'product_brands.*', 
+            'product_brand_language.*'
+        )
+        ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+        ->get();
+        $sub_brands=Sub_brand::all();
         $this->authorize('modules', 'product.update');
         $product = $this->productRepository->getProductById($id, $this->language);
         $attributeCatalogue = $this->attributeCatalogue->getAll($this->language);
@@ -174,7 +198,8 @@ class ProductController extends Controller
             'album',
             'attributeCatalogue',
             'queryUrl',
-            'product_brands'
+            'brands',
+            'sub_brands'
         ));
     }
 

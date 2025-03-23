@@ -9,9 +9,10 @@
 
         </div>
     </div>
+
     <div class="col-12 col-md-7 form-col">
         <div class="login-form-container">
-            <form action="{{ route('customer.reg')}}" method="post">
+            <form action="{{ route('collaborator.reg')}}" method="post">
                 <h2 class="login-title">Đăng ký</h2>
                 <p class="welcome-text">Chào mừng thành viên của A'nista!</p>
                 @csrf
@@ -73,33 +74,63 @@
                     <span class="text-danger">* {{ $errors->first('phone') }}</span>
                     @endif
                 </div>
+
+                <div class="mb-3">
+                    <input
+                        type="text"
+                        name="address"
+                        value="{{ old('address') }}"
+                        placeholder="Địa chỉ"
+                        class="form-control">
+                    @if($errors->has('address'))
+                    <span class="text-danger">* {{ $errors->first('address') }}</span>
+                    @endif
+                </div>
+                <div class="mb-3">
+                    <input
+                        type="text"
+                        name="referral_by"
+                        value="{{ old('referral_by') }}"
+                        placeholder="Mã giới thiệu"
+                        class="form-control">
+                    @if($errors->has('referral_by'))
+                    <span class="text-danger">* {{ $errors->first('referral_by') }}</span>
+                    @endif
+                </div>
                 <div class="mb-3">
                     <input
                         type="number"
                         name="min_orders"
-                        value="2"
-                        hidden
+                        value="{{ old('min_orders') }}"
                         placeholder="Số đơn hàng tối thiểu/tháng"
                         class="form-control">
+                    @if($errors->has('min_orders'))
+                    <span class="text-danger">* {{ $errors->first('min_orders') }}</span>
+                    @endif
                 </div>
 
                 <div class="mb-3">
                     <input
                         type="number"
                         name="monthly_spending"
-                        value="1"
-                        hidden
+                        value="{{ old('monthly_spending') }}"
                         placeholder="Tổng chi tiêu/tháng"
-                        class="form-control" >
+                        class="form-control">
+                    @if($errors->has('monthly_spending'))
+                    <span class="text-danger">* {{ $errors->first('monthly_spending') }}</span>
+                    @endif
                 </div>
 
                 <div class="mb-3">
                     <textarea
                         name="about_me"
-                        hidden
                         placeholder="Giới thiệu bản thân"
-                        class="form-control" value="1">123123123</textarea>
+                        class="form-control">{{ old('about_me') }}</textarea>
+                    @if($errors->has('about_me'))
+                    <span class="text-danger">* {{ $errors->first('about_me') }}</span>
+                    @endif
                 </div>
+
 
                 <button type="submit" class="btn btn-login">Đăng ký</button>
             </form>

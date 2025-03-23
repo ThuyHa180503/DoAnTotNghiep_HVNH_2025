@@ -10,7 +10,6 @@
         </div>
     </div>
     <div class="uk-container uk-container-center">
-
         @if ($errors->any())
         <div class="uk-alert uk-alert-danger" style="margin-top: 20px">
                 <ul>

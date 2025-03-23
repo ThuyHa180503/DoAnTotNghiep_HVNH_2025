@@ -28,7 +28,7 @@ class CartController extends FrontendController
         $flag = $this->cartService->create($request, $this->language);
 
         $cart = Cart::instance('shopping')->content();
-        
+ 
         return response()->json([
             'cart' => $cart, 
             'messages' => 'Thêm sản phẩm vào giỏ hàng thành công',

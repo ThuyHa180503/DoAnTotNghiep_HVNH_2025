@@ -78,7 +78,7 @@
         <div class="row mb15">
             <div class="col-lg-12">
                 <div class="form-row">
-                    <label for="">{{ __('messages.product.price') }}</label>
+                    <label for="">Giá nhập kho</label>
                     <input 
                         type="text"
                         name="price"
@@ -88,6 +88,35 @@
                 </div>
             </div>
         </div>
+        <!--  -->
+        <div class="row mb15">
+            <div class="col-lg-12">
+                <div class="form-row">
+                    <label for="">Đơn vị tiền tệ</label>
+                    <input 
+                        type="text"
+                        name="currency"
+                        value="{{ old('currency'), $product->currency ?? null}}"
+                        class="form-control"
+                    >
+                </div>
+            </div>
+        </div>
+        <!--  -->
+        <div class="row mb15">
+            <div class="col-lg-12">
+                <div class="form-row">
+                    <label for="">Cân nặng</label>
+                    <input 
+                        type="text"
+                        name="weight"
+                        value="{{ old('weight', (isset($product)) ? number_format($product->weight, 0 , ',', '.') : '') }}"
+                        class="form-control "
+                    >
+                </div>
+            </div>
+        </div>
+
         <div class="form-row mb20">
             <label for="" class="control-label text-left">Thời gian BH</label>
             <div class="guarantee">
@@ -96,7 +125,7 @@
                         type="text"
                         name="guarantee"
                         value="{{ old('guarantee', $product->guarantee  ?? null) }}"
-                        class="text-right form-control int"
+                        class="text-right form-control "
                         placeholder=""
                         autocomplete="off"
                         style="margin-right:10px;"

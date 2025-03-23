@@ -13,6 +13,10 @@ use App\Repositories\Interfaces\SourceRepositoryInterface as SourceRepository;
 
 use App\Http\Requests\Customer\StoreCustomerRequest;
 use App\Http\Requests\Customer\UpdateCustomerRequest;
+use App\Mail\CustomerUpdatedMail;
+use App\Models\Customer;
+use App\Models\CustomerCatalogue;
+use Illuminate\Support\Facades\Mail;
 
 class CustomerController extends Controller
 {
@@ -38,11 +42,12 @@ class CustomerController extends Controller
 
     public function indexWait(Request $request)
     {
-        $request->merge(['publish' => 1]); 
+        $request->merge(['publish' => 3]); 
         $this->authorize('modules', 'customer.index');
         $customers = $this->customerService->paginate($request);
-
+        
         $customerCatalogues = $this->customerCatalogueRepository->all();
+        //dd($customerCatalogues);
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -64,9 +69,8 @@ class CustomerController extends Controller
             'customerCatalogues',
         ));
     }
-
     public function index(Request $request)
-    {
+    {   
         $this->authorize('modules', 'customer.index');
         $customers = $this->customerService->paginate($request);
 
@@ -147,6 +151,37 @@ class CustomerController extends Controller
         }
         return redirect()->route('customer.index')->with('error', 'Cập nhật bản ghi không thành công. Hãy thử lại');
     }
+
+    public function update1(Request $request, $id) {
+        $customer = Customer::findOrFail($id);
+        $oldCatalogueId = $customer->customer_catalogue_id;
+    
+        $newCatalogue = CustomerCatalogue::find($request->customer_catalogue_id);
+    
+        $customer->customer_catalogue_id = $request->customer_catalogue_id;
+        $customer->save();
+        
+        if ($oldCatalogueId !== $request->customer_catalogue_id) {
+            Mail::to($customer->email)->send(new CustomerUpdatedMail($customer, $newCatalogue));
+        }
+    
+        return redirect()->back()->with('success', 'Cập nhật thành công!');
+    }
+
+    public function accept($id) {
+        $customer = Customer::findOrFail($id);
+        $customer->publish=2; 
+        $customer->save();
+        return redirect()->back()->with('success', 'Khách hàng đã được chấp nhận.');
+    }
+    
+    public function reject($id) {
+        $customer = Customer::findOrFail($id);
+        $customer->publish = 0; 
+        $customer->save();
+        return redirect()->back()->with('error', 'Khách hàng đã bị từ chối.');
+    }
+    
 
     public function delete($id)
     {

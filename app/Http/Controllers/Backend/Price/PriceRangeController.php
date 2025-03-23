@@ -55,18 +55,30 @@ class PriceRangeController extends Controller
     } 
  
     public function index(Request $request){
-        $perPage = $request->perpage ?? 20; 
-        $price_ranges = Price_range::select(
-            'price_ranges.id as price_range_id', 
-            'sub_brands.id as sub_brand_id',    
-            'price_ranges.*', 
-            'product_brand_language.name as brand_name',  
-            'sub_brands.name as sub_name' 
-        )
-        ->leftJoin('sub_brands', 'price_ranges.sub_brand_id', '=', 'sub_brands.id') 
-        ->leftJoin('product_brand_language', 'sub_brands.brand_id', '=', 'product_brand_language.product_brand_id') 
-        ->orderBy('product_brand_language.name') 
-        ->paginate($perPage);
+        $perPage = $request->perpage ?? 20;
+$query = Price_range::select(
+        'price_ranges.id as price_range_id', 
+        'sub_brands.id as sub_brand_id',    
+        'price_ranges.*', 
+        'product_brand_language.name as brand_name',  
+        'sub_brands.name as sub_name' 
+    )
+    ->leftJoin('sub_brands', 'price_ranges.sub_brand_id', '=', 'sub_brands.id') 
+    ->leftJoin('product_brand_language', 'sub_brands.brand_id', '=', 'product_brand_language.product_brand_id');
+    if ($request->has('keyword') && !empty($request->keyword)) {
+        $keyword = $request->keyword;
+        $query->where(function ($q) use ($keyword) {
+            $q->where('product_brand_language.name', 'LIKE', "%$keyword%")
+            ->orWhere('sub_brands.name', 'LIKE', "%$keyword%")
+            ->orWhere('price_ranges.name', 'LIKE', "%$keyword%"); 
+        });
+    }
+
+$query->orderBy('product_brand_language.name');
+
+
+$price_ranges = $query->paginate($perPage);
+
     
         $config = [
             'js' => [
@@ -119,50 +131,56 @@ class PriceRangeController extends Controller
             'brands'
         ));
     }
-public function store(Request $request)
-{
-    $request->validate([
-        'brand_id' => 'required',
-        'range_name' => 'required|string|max:255',
-        'ranges_data' => 'required|json',
-    ]);
-
-    $ranges = json_decode($request->ranges_data, true);
-
-    try {
-        DB::beginTransaction(); // Bắt đầu transaction
-
-        // 1️⃣ Lưu sub_brand trước
-        $subBrand = Sub_brand::create([
-            'brand_id' => $request->brand_id,
-            'name' => $request->range_name ?? 'Không xác định',
+    public function store(Request $request)
+    {
+        $request->validate([
+            'brand_id' => 'required',
+            'range_name' => 'required|string|max:255',
+            'ranges_data' => 'required|json',
         ]);
-        
-        $level = 1; 
-
-        foreach ($ranges as $range) {
-            Price_range::create([
-                'sub_brand_id' => $subBrand->id, 
-                'name' => 'Mức ' . $level,
-                'range_from' => $range['from'],
-                'range_to' => $range['to'],
-                'value_type' => $range['valueType'],
-                'value' => $range['value'],
-            ]);
-            $level++;
+    
+        // Kiểm tra dữ liệu nhận được từ request
+        //dd($request->all()); // Debug: Xem toàn bộ dữ liệu trước khi xử lý
+    
+        $ranges = json_decode($request->ranges_data, true);
+    
+        if (!is_array($ranges)) {
+            return back()->with('error', 'Dữ liệu không hợp lệ.');
         }
+    
+        try {
+            DB::beginTransaction();
 
-        DB::commit(); 
+            $subBrand = Sub_brand::create([
+                'brand_id' => $request->brand_id,
+                'name' => $request->range_name ?? 'Không xác định',
+            ]);
+    
 
-        return redirect()->route('price_range.index')->with('success', 'Thêm mới bản ghi thành công');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        dd($e);
-        return back()->with('error', 'Lỗi khi thêm dữ liệu: ' . $e->getMessage());
+            $level = 1;
+            foreach ($ranges as $range) {
+
+                
+                Price_range::create([
+                    'sub_brand_id' => $subBrand->id, 
+                    'name' => 'Mức ' . $level,
+                    'price_min' => $range['from'] ?? 0, 
+                    'price_max' => $range['to'] ?? 0,
+                    'value_type' => $range['valueType'] ?? 'fixed',
+                    'value' => $range['value'] ?? 0, 
+                ]);
+                $level++;
+            }
+    
+            DB::commit(); 
+    
+            return redirect()->route('price_range.index')->with('success', 'Thêm mới bản ghi thành công');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Lỗi khi thêm dữ liệu: ' . $e->getMessage());
+        }
     }
-}
-
-
+    
     /**
      * Show the form for editing the specified resource.
      */

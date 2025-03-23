@@ -680,6 +680,16 @@ ul li{
         text-align: center;
         border-radius: 0;
     }
+    .addToCart1.mobile{
+        display: block !important;
+        position: fixed;
+        bottom: 60px;
+        left: 0;
+        width: 100% !important;
+        z-index: 1000;
+        text-align: center;
+        border-radius: 0;
+    }
     .pagination .page-item{
         margin-bottom: 5px !important;
     }
@@ -693,6 +703,9 @@ ul li{
     }
 }
 .addToCart.mobile{
+    display: none;
+}
+.addToCart1.mobile{
     display: none;
 }
 .page{
@@ -1628,6 +1641,22 @@ ul li{
     font-size: 15px;
 }
 
+.addToCart1{
+    background: #7a95a2;
+    height:40px;
+    padding:0 20px;
+    line-height:40px;
+    color:#fff;
+    border-radius: 5px;
+}
+
+.addToCart1 > *{
+    color:#fff;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 15px;
+}
+
 .right-item{
     padding-left:50px;
     position: relative;
@@ -1935,7 +1964,7 @@ ul li{
     border:1px solid #000;
     border-radius: 10px;
 }
-.cart-item .cart-item-qty .btn-qty{
+.cart-item .cart-item-qty .btn-qty .btn-qty2{
     border:0;
     background: transparent;
     position: absolute;

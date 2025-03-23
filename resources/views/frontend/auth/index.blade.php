@@ -13,29 +13,29 @@
                 Mã giới thiệu không bắt buộc (đổi thành sđt )
                 Sau khi đăng ký thì vẫn đăng nhập vào được hệ thống, tuy nhiên ở dạng khách lẻ. BAO GIỜ CÓ NGƯỜI DUYỆT THÌ MỚI LÀ CTV 
                 Sau khi đăng ký có mail "thông báo tiếp nhận yêu cầu làm ctv, hiện tại bạn có thể đăng nhập vào tk với tư cách là khách hàng. Khi nào A'nista duyệt sẽ nâng cấp tài khoản của bạn."-->
-                    <p>Bạn có muốn làm đối tác của chúng tôi không? <br><a href="#"><strong>Đăng ký</strong> làm cộng tác viên ngay!!!</a></p>
-                </div>
+                <p>Bạn có muốn làm đối tác của chúng tôi không? <br><a href="{{ route('collaborator.register') }}"><strong>Đăng ký</strong> làm cộng tác viên ngay!!!</a></p>
+            </div>
         </div>
     </div>
-    
+
     <div class="col-12 col-md-7 form-col">
         <div class="login-form-container">
             <h2 class="login-title">Đăng nhập</h2>
             <p class="welcome-text">Chào mừng thành viên của A'nista!</p>
-            
-            <form action="{{ route('fe.auth.dologin') }}" >
+
+            <form action="{{ route('fe.auth.dologin') }}">
                 @csrf
                 <div class="form-group">
                     <input type="text" name="email" class="form-control" placeholder="Email đăng nhập" value="{{ old('email') }}">
                 </div>
-                
+
                 <div class="form-group">
                     <input type="password" name="password" class="form-control" placeholder="Mật khẩu">
                     @if($errors->has('email'))
                     <span class="text-danger">* {{ $errors->first('email') }}</span>
                     @endif
                 </div>
-                
+
                 <div class="form-options">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="remember">
@@ -45,16 +45,16 @@
                         <a href="{{ route('forgot.customer.password') }}">Quên mật khẩu?</a>
                     </div>
                 </div>
-                
+
                 <div class="form-submit">
                     <button type="submit" class="btn-login">Đăng nhập</button>
                 </div>
-                
+
                 <div class="register-link">
                     <p>Bạn chưa có tài khoản? <a href="{{ route('customer.register') }}"><strong>Đăng ký ngay!!!</strong></a></p>
                 </div>
             </form>
-            
+
 
         </div>
     </div>
@@ -67,12 +67,12 @@
     .login-container {
         margin: 50px auto;
         max-width: 1000px;
-        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         border-radius: 10px;
         overflow: hidden;
         background-color: #fff;
     }
-    
+
     .brand-col {
         background-color: #fff;
         padding: 40px 20px;
@@ -82,31 +82,31 @@
         align-items: center;
         text-align: center;
     }
-    
+
     .brand-title {
         font-size: 70px;
         font-weight: 400;
         color: #333;
         margin-bottom: 20px;
     }
-    
+
     .brand-tagline {
         font-size: 14px;
         letter-spacing: 1px;
         color: #555;
         text-transform: uppercase;
     }
-    
+
     .form-col {
         background-color: #f8f9fa;
         padding: 40px 20px;
     }
-    
+
     .login-form-container {
         max-width: 450px;
         margin: 0 auto;
     }
-    
+
     .login-title {
         font-size: 36px;
         font-weight: 600;
@@ -114,42 +114,42 @@
         text-align: center;
         margin-bottom: 10px;
     }
-    
+
     .welcome-text {
         text-align: center;
         color: #666;
         margin-bottom: 30px;
     }
-    
+
     .form-group {
         margin-bottom: 20px;
     }
-    
+
     .form-control {
         padding: 15px;
         border: none;
         border-radius: 5px;
         background-color: #e9ecef;
     }
-    
+
     .form-options {
         display: flex;
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
     }
-    
+
     .form-check-label {
         color: #555;
         font-size: 14px;
     }
-    
+
     .forgot-password a {
         color: #666;
         text-decoration: none;
         font-size: 14px;
     }
-    
+
     .btn-login {
         width: 100%;
         padding: 15px;
@@ -161,35 +161,35 @@
         margin-bottom: 20px;
         cursor: pointer;
     }
-    
+
     .register-link {
         text-align: center;
         margin-top: 20px;
         margin-bottom: 40px;
     }
-    
+
     .register-link a {
         color: #7A95A2;
         text-decoration: none;
         font-weight: 500;
     }
-    
+
     .copyright-text {
         text-align: center;
         font-size: 14px;
         color: #999;
         margin-top: 20px;
     }
-    
+
     @media (max-width: 768px) {
         .brand-col {
             padding: 30px 15px;
         }
-        
+
         .brand-title {
             font-size: 50px;
         }
-        
+
         .form-col {
             padding: 30px 15px;
         }

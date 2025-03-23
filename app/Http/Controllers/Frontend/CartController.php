@@ -14,7 +14,12 @@ use App\Classes\Vnpay;
 use App\Classes\Momo;
 use App\Classes\Paypal;
 use App\Classes\Zalo;
+use App\Models\Cart as ModelsCart;
+use App\Models\CartDetail;
 use Illuminate\Support\Facades\Auth;
+use Stringable;
+use Illuminate\Support\Str;
+
 
 class CartController extends FrontendController
 {
@@ -51,10 +56,11 @@ class CartController extends FrontendController
     }
 
 
-    public function checkout(){
+    public function checkout($type=null){
+        
         $provinces = $this->provinceRepository->all();
+        $customer_id = auth()->guard('customer')->id();
         $carts = Cart::instance('shopping')->content();
-        $carts = $this->cartService->remakeCart($carts);
         $cartCaculate = $this->cartService->reCaculateCart();
         $cartPromotion = $this->cartService->cartPromotion($cartCaculate['cartTotal']);
         $seo = [
@@ -64,6 +70,29 @@ class CartController extends FrontendController
             'meta_image' => '',
             'canonical' => write_url('thanh-toan', TRUE, TRUE),
         ];
+        if($type!=null ){
+            $cart_id=ModelsCart::where('customer_id',$customer_id)->first();
+            $carts=CartDetail::with('product','product_name')->where('cart_id',$cart_id->ID)->get();
+            $convertedItems = [];
+            foreach ($carts as $cart) {
+                $rowId = Str::uuid()->toString();
+
+                $convertedItems[$rowId] = (object) [
+                    'rowId' => $rowId,
+                    'id' => $cart->product_id,
+                    'qty' => (string) $cart->quantity,
+                    'name' => optional($cart->product_name)->name ?? 'Sản phẩm không tồn tại',
+                    'price' => (float) $cart->unit_price,
+                    'options' => (object) [], 
+                    'associatedModel' => null,
+                    'taxRate' => 0,
+                    'priceOriginal' => (float) $cart->unit_price,
+                    'image' => optional($cart->product)->image ?? '',
+                    'cart'=>2,
+                ];
+            }
+            $carts=$convertedItems;
+        }
         $system = $this->system;
         $config = $this->config();
         return view('frontend.cart.index', compact(
@@ -74,6 +103,7 @@ class CartController extends FrontendController
             'carts',
             'cartPromotion',
             'cartCaculate',
+            'type'
         ));
         
     }
@@ -81,6 +111,8 @@ class CartController extends FrontendController
     public function store(StoreCartRequest $request){
         $customerID = Auth::guard('customer')->id();
         $request['customer_id'] = $customerID;
+        //$request['product_catalogue_id'] = 16;
+        
         $system = $this->system;
         $order = $this->cartService->order($request, $system);
         if($order['flag']){
@@ -123,7 +155,6 @@ class CartController extends FrontendController
         return $response;
     }
 
-    
     private function config(){
         return [
             'language' => $this->language,
@@ -138,5 +169,140 @@ class CartController extends FrontendController
         ];
     }
   
+    public function storeCart(Request $request) {
 
+        
+        $customer_id = auth()->guard('customer')->id();
+        $qty = $request->input('qty_cart', 1);
+        $unit_price = $request->input('price_cart', 0);
+        $product_id = $request->input('id_item');
+        $product_variant_id = null; 
+        $cart = ModelsCart::firstOrCreate(
+            ['customer_id' => $customer_id], 
+            [] 
+        );
+    if($cart){
+        $item = CartDetail::where('cart_id', $cart->ID)
+        ->where('product_id', $product_id)
+        ->where('product_variant_id', $product_variant_id)
+        ->first();
+    if ($item) {
+    $item->quantity += $qty;
+    $item->save();
+    } 
+    else {
+        CartDetail::create([
+            'cart_id' => $cart->ID,
+            'product_id' => $product_id,
+            'product_variant_id' => $product_variant_id,
+            'unit_price' => $unit_price,
+            'quantity' => $qty
+        ]);
+    }
+
+    return redirect()->back(); 
+    }
+        
+    }
+
+
+    public function cart()
+{
+    $provinces = $this->provinceRepository->all();
+    $customer_id = auth()->guard('customer')->id();
+    
+    if (!$customer_id) {
+        return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để xem giỏ hàng.');
+    }
+
+    $cartCaculate = $this->cartService->reCaculateCart();
+    $cartPromotion = $this->cartService->cartPromotion($cartCaculate['cartTotal']);
+
+    $seo = [
+        'meta_title' => 'Trang thanh toán đơn hàng',
+        'meta_keyword' => '',
+        'meta_description' => '',
+        'meta_image' => '',
+        'canonical' => write_url('thanh-toan', TRUE, TRUE),
+    ];
+
+    $cart = ModelsCart::where('customer_id', $customer_id)->first();
+    
+    if (!$cart) {
+        return redirect()->route('home')->with('error', 'Giỏ hàng trống.');
+    }
+
+    $carts1 = CartDetail::with(['product', 'product_name'])
+        ->where('cart_id', $cart->ID)
+        ->get();
+
+    $convertedItems = [];
+
+    foreach ($carts1 as $cartItem) {
+        $rowId = Str::uuid()->toString();
+        $convertedItems[$rowId] = (object) [
+            'rowId' => $rowId,
+            'id' => $cartItem->product_id,
+            'qty' => (string) $cartItem->quantity,
+            'name' => optional($cartItem->product_name)->name ?? 'Sản phẩm không tồn tại',
+            'price' => (float) $cartItem->unit_price,
+            'options' => (object) [], 
+            'associatedModel' => null,
+            'taxRate' => 0,
+            'priceOriginal' => (float) $cartItem->unit_price,
+            'image' => optional($cartItem->product)->image ?? '',
+            'cart' => 2,
+        ];
+    }
+    $carts=$convertedItems;
+    $system = $this->system;
+    $config = $this->config();
+
+    return view('frontend.cart.cart', compact(
+        'config',
+        'seo',
+        'system',
+        'provinces',
+        'carts', 
+        'cartPromotion',
+        'cartCaculate'
+    ));
+}
+
+
+    public function update(Request $request)
+{
+    $customer_id = auth()->guard('customer')->id();
+    $cart = ModelsCart::where('customer_id', $customer_id)->first(); 
+  
+
+    if (!$cart) {
+        return redirect()->back()->with('error', 'Không tìm thấy giỏ hàng!');
+    }
+    
+    $change = (int) $request->change; 
+    $cartItem = CartDetail::where('cart_id', $cart->ID)
+                          ->first();
+    if ($cartItem) {
+        $newQty = max(1, $cartItem->quantity + $change);
+        $cartItem->quantity = $newQty;
+        $cartItem->save();
+
+        return redirect()->back()->with('success', 'Cập nhật giỏ hàng thành công!');
+    }
+
+    return redirect()->back()->with('error', 'Không tìm thấy sản phẩm trong giỏ hàng!');
+}
+
+    
+
+    public function remove(Request $request){
+    $customer_id = auth()->guard('customer')->id();
+    $cart = ModelsCart::where('customer_id', $customer_id)->first(); 
+    $cartItem = CartDetail::where('cart_id', $cart->ID)
+    ->where('product_id', $request->product_id) // Xác định sản phẩm cần xóa
+    ->first();
+    $cartItem->delete();
+return redirect()->back();
+    }
 }

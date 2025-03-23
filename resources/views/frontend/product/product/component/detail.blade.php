@@ -1,15 +1,14 @@
 @php
-    $name = $product->name;
-    
-    $canonical = write_url($product->canonical);
-    $image = image($product->image);
-    $price = getPrice($product);
-    $catName = $productCatalogue->name;
-    $review = getReview($product);
-    
-    $description = $product->description;
-    $attributeCatalogue = $product->attributeCatalogue;
-    $gallery = json_decode($product->album);
+$name = $product->name;
+
+$canonical = write_url($product->canonical);
+$image = image($product->image);
+$price = getPrice($product);
+$catName = $productCatalogue->name;
+$review = getReview($product);
+$description = $product->description;
+$attributeCatalogue = $product->attributeCatalogue;
+$gallery = json_decode($product->album);
 @endphp
 <div class="panel-body">
     <div class="uk-grid uk-grid-medium">
@@ -20,20 +19,20 @@
                     <div class="swiper-button-next"></div>
                     <div class="swiper-button-prev"></div>
                     <div class="swiper-wrapper big-pic">
-                        <?php foreach($gallery as $key => $val){  ?>
-                        <div class="swiper-slide" data-swiper-autoplay="2000">
-                            <a href="{{ image($val) }}" data-uk-lightbox="{group:'my-group'}" class="image img-scaledown"><img src="{{ image($val) }}" alt="<?php echo $val ?>"></a>
-                        </div>
+                        <?php foreach ($gallery as $key => $val) {  ?>
+                            <div class="swiper-slide" data-swiper-autoplay="2000">
+                                <a href="{{ image($val) }}" data-uk-lightbox="{group:'my-group'}" class="image img-scaledown"><img src="{{ image($val) }}" alt="<?php echo $val ?>"></a>
+                            </div>
                         <?php }  ?>
                     </div>
                     <div class="swiper-pagination"></div>
                 </div>
                 <div class="swiper-container-thumbs">
                     <div class="swiper-wrapper pic-list">
-                        <?php foreach($gallery as $key => $val){  ?>
-                        <div class="swiper-slide">
-                            <span  class="image img-scaledown"><img src="{{  image($val) }}" alt="<?php echo $val ?>"></span>
-                        </div>
+                        <?php foreach ($gallery as $key => $val) {  ?>
+                            <div class="swiper-slide">
+                                <span class="image img-scaledown"><img src="{{  image($val) }}" alt="<?php echo $val ?>"></span>
+                            </div>
                         <?php }  ?>
                     </div>
                 </div>
@@ -52,7 +51,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="product-specs">
                     <div class="spec-row">Mã sản phẩm: <strong>{{ $product->code }}</strong></div>
                     <div class="spec-row">Tình Trạng: <strong>Còn hàng</strong></div>
@@ -62,29 +61,48 @@
                     <div class="uk-width-large-1-2">
                         <div class="a-left">
                             {!! $price['html'] !!}
-                            @if($price['price']  != $price['priceSale'])
+                            @if($price['price'] != $price['priceSale'])
                             <div class="price-save">
                                 Tiết kiệm: <strong>{{ convert_price($price['price'] - $price['priceSale'], true) }}</strong> (<span style="color:red">-{{ $price['percent'] }}%</span>)
                             </div>
                             @endif
-                        
+
                             @include('frontend.product.product.component.variant')
                             <div class="quantity mt10">
-                                <div class="uk-flex uk-flex-middle">
+                            <div class="uk-flex uk-flex-middle" >
                                     <div class="quantitybox uk-flex uk-flex-middle">
                                         <div class="minus quantity-button">-</div>
                                         <input type="text" name="" value="1" class="quantity-text">
                                         <div class="plus quantity-button">+</div>
                                     </div>
-                                    <div class="btn-group uk-flex uk-flex-middle">
-                                        <div class="btn-item btn-1 addToCart" data-id="{{ $product->id }}">
-                                            <a href="" title="">Mua ngay</a>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
-                            <div class="btn-item btn-1 addToCart mobile" data-id="{{ $product->id }}">
-                                <a href="" title="">Mua ngay</a>
+                            <div class="btn-group uk-flex uk-flex-middle" style="margin-top:10px">
+                                @auth('customer')
+                                            <div class="btn-item btn-1 addToCart" data-id="{{ $product->id }}">
+                                                <a href="" title="">Mua Ngay</a>
+                                            </div>
+                                            <form id="addToCartForm" action="{{ route('cart.storeCart') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="qty_cart" id="qty_cart" value="1">
+                                                <input type="hidden" name="price_cart" id="price_cart" value="{!! $price['price'] !!}">
+                                                <input type="hidden" name="id_item" id="id_item" value="{!! $product->id !!}">
+                                                <input type="hidden" name="variant" id="variant" value="{!! $product->variant !!}">
+                                                <input type="hidden" name="type" id="type" value="2">
+                                            </form>
+
+                                            <div class="btn-item btn-1 addToCart1" style="margin-left:10px">
+                                                <a href="javascript:void(0);" onclick="submitCart()">+ Giỏ hàng</a>
+                                            </div>
+                                            
+                                        @else                                     
+                                            <div class="btn-item btn-1 addToCart1">
+                                                <a href="{{ route('fe.auth.login') }}" title="">Mua Ngay</a>
+                                            </div>
+                                            <div class="btn-item btn-1 addToCart1">
+                                                <a href="{{ route('fe.auth.login') }}" title="">+ Giỏ hàng</a>
+                                            </div>
+                                        @endauth
+                                    </div>
                             </div>
                         </div>
                     </div>
@@ -126,16 +144,16 @@
         </div>
         <div class="uk-width-large-1-4 uk-visible-large">
             <div class="aside">
-               
+
                 <div class="aside-category aside-product mt20">
                     <div class="aside-heading">Sản phẩm nổi bật</div>
                     <div class="aside-body">
                         @foreach($widgets['products-hl']->object as $product)
                         @php
-                            $name = $product->languages->first()->pivot->name;
-                            $canonical = write_url($product->languages->first()->pivot->canonical);
-                            $image  = $product->image;
-                            $price = getPrice($product);
+                        $name = $product->languages->first()->pivot->name;
+                        $canonical = write_url($product->languages->first()->pivot->canonical);
+                        $image = $product->image;
+                        $price = getPrice($product);
                         @endphp
                         <div class="aside-product uk-clearfix">
                             <a href="" class="image img-cover"><img src="{{ $image }}" alt="{{ $name }}"></a>
@@ -150,7 +168,7 @@
 
             </div>
         </div>
-       
+
     </div>
 
     <div class="product-related">
@@ -192,24 +210,24 @@
                 <div class="panel-body list-product">
                     @if(!is_null($cartSeen) && isset($cartSeen) )
                     <div class="uk-grid uk-grid-medium">
-                    @foreach($cartSeen as $key => $val)
-                    @php
+                        @foreach($cartSeen as $key => $val)
+                        @php
                         $name = $val->name;
                         $canonical = $val->options['canonical'];
                         $image = $val->options['image'];
                         $priceSeen = number_format($val->price, 0, ',', '.');
-                    @endphp
+                        @endphp
                         <div class="uk-width-1-2 uk-width-small-1-2 uk-width-medium-1-3 uk-width-large-1-5 mb20">
-                       
+
                             <div class="product-item product">
-                                 <a href="{{ $canonical }}" class="image img-scaledown img-zoomin"><img src="{{ $image }}" alt="{{ $name }}"></a>
+                                <a href="{{ $canonical }}" class="image img-scaledown img-zoomin"><img src="{{ $image }}" alt="{{ $name }}"></a>
                                 <div class="info">
                                     <h3 class="title"><a href="{{ $canonical }}" title="{{ $name }}">{{ $name }}</a></h3>
-                                   <div class="price">
+                                    <div class="price">
                                         <div class="price-sale">{{ $priceSeen }}</div>
-                                   </div>
-                                </div> 
-                            
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                         @endforeach
@@ -219,10 +237,12 @@
             </div>
         </div>
     </div>
-   
 </div>
-
 <input type="hidden" class="productName" value="{{ $product->name }}">
 <input type="hidden" class="attributeCatalogue" value="{{ json_encode($attributeCatalogue) }}">
 <input type="hidden" class="productCanonical" value="{{ write_url($product->canonical) }}">
-
+<script>
+    function submitCart() {
+        document.getElementById("addToCartForm").submit();
+    }
+</script>

@@ -144,10 +144,10 @@ class CartService  implements CartServiceInterface
                 ];
             }
         }
-        if (!empty($temp)) {
-            $order->products()->createMany($temp); 
-        }
-        Product::orderBy('id', 'desc')->first()?->delete();
+        // if (!empty($temp)) {
+        //     $order->products()->createMany($temp); 
+        // }
+        // Product::orderBy('id', 'desc')->first()?->delete();
     }
 
     public function order($request, $system)
@@ -191,7 +191,7 @@ class CartService  implements CartServiceInterface
             if ($order->id > 0) {
 
                 $this->createOrderProduct($payload, $order, $request);
-               
+              
                 $this->mail($order, $system,$result);
                 
                 Cart::instance('shopping')->destroy();

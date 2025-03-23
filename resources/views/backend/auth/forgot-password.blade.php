@@ -157,7 +157,7 @@
                 </form>
                 
                 <div class="back-to-login">
-                    <button  onclick="goBack()" style="border: none; background-color: white; color: #7A95A2;">Quay lại trang đăng nhập</button>
+                    <a href="{{ route('auth.login') }}">Quay lại trang đăng nhập</a>
                 </div>
                 
                 <div class="login-footer">
@@ -168,8 +168,3 @@
     </div>
 </body>
 </html>
-<script>
-    function goBack() {
-        window.history.back();
-    }
-</script>

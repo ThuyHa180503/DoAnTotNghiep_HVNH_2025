@@ -61,7 +61,9 @@ class CustomerCatalogueController extends Controller
 
     public function store(StoreCustomerCatalogueRequest $request)
     {
-        //dd($request->all());
+        $request->merge([
+            'publish' => 2
+        ]);
         if ($this->customerCatalogueService->create($request)) {
             return redirect()->route('customer.catalogue.index')->with('success', 'Thêm mới bản ghi thành công');
         }

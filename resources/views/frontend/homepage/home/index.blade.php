@@ -30,13 +30,9 @@
     @if(isset($widgets['flash-sale']))
     <div class="panel-flash-sale" id="#flash-sale">
         <div class="uk-container uk-container-center">
-            <!-- <div class="main-heading">
-             
-            </div> -->
             <div class="panel-head" style="text-align: center;">
-                    <!-- Lấy ra 10 sản phẩm mới nhất-->
-                    <h2 class="heading-1"><span style="color: #484848; text-align: center;">Sản phẩm mới</span></h2> 
-                </div>
+                <h2 class="heading-1"><span style="color: #484848; text-align: center;">Sản phẩm mới</span></h2>
+            </div>
             <div class="panel-body">
                 <div class="uk-grid uk-grid-medium">
                     @foreach ($widgets['flash-sale']->object as $key => $product)
@@ -72,14 +68,13 @@
                 } */
                 </style> --}}
                 <!-- <div class="main-heading">
-                   
                 </div> -->
                 <div class="panel-head" style="text-align: center;">
-                        <div class="uk-flex uk-flex-middle uk-flex-space-between" style="text-align: center;">
-                            <h2 class="heading-1"><a href="{{ $catCanonical }}" title="{{ $catName }}" style="color: #484848;">{{ $catName }}</a></h2>
-                            <a href="{{ $catCanonical }}" class="readmore">Tất cả sản phẩm</a>
-                        </div>
+                    <div class="uk-flex uk-flex-middle uk-flex-space-between" style="text-align: center;">
+                        <h2 class="heading-1"><a href="{{ $catCanonical }}" title="{{ $catName }}" style="color: #484848;">{{ $catName }}</a></h2>
+                        <a href="{{ $catCanonical }}" class="readmore">Tất cả sản phẩm</a>
                     </div>
+                </div>
                 <div class="panel-body">
                     @if(count($category->products))
                     <div class="uk-grid uk-grid-medium">
@@ -104,8 +99,8 @@
     $catCanonical = write_url($val->languages->first()->pivot->canonical);
     @endphp
     <div class="panel-news" style="text-align: center;">
-        <div class="uk-container uk-container-center" >
-            <div class="panel-head"  style="text-align: center; ">
+        <div class="uk-container uk-container-center">
+            <div class="panel-head" style="text-align: center; ">
                 <h2 class="heading-1" style="color: #484848;     text-transform: uppercase;
     font-weight: 700;
     font-size: 18px;

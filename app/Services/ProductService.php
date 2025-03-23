@@ -107,8 +107,7 @@ class ProductService extends BaseService implements ProductServiceInterface
         $relations = ['product_catalogues'];
 
         $rawQuery = $this->whereRaw($request, $languageId, $productCatalogue);
-
-        // dd($rawQuery);
+    
         $joins = [
             ['product_language as tb2', 'tb2.product_id', '=', 'products.id'],
             ['product_catalogue_product as tb3', 'products.id', '=', 'tb3.product_id'],
@@ -124,7 +123,8 @@ class ProductService extends BaseService implements ProductServiceInterface
             $relations,
             $rawQuery
         ); 
-
+       
+//dd($products);
         return $products;
     }
 
@@ -372,6 +372,8 @@ class ProductService extends BaseService implements ProductServiceInterface
             'guarantee',
             'product_brand_id',
             'order',
+            'weight',
+            'currency',
         ];
     }
 

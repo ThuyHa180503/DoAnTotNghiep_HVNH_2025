@@ -35,12 +35,13 @@
                                         <option value="">-- Chọn thương hiệu --</option>
                                         @foreach($brands as $brand)
                                             <option 
-                                                {{ old('product_brand_id') == $brand->id ? 'selected' : '' }} 
-                                                value="{{ $brand->id }}">
+                                                value="{{ $brand->id }}" 
+                                                {{ (old('product_brand_id', $product->product_brand_id ?? '') == $brand->id) ? 'selected' : '' }}>
                                                 {{ $brand->name ?? 'Không có tên' }}
                                             </option>
                                         @endforeach
                                     </select>
+
                                 </div>
                         </div>
                         
@@ -58,7 +59,7 @@
                     <div class="form-row mb15">
                         <label class="control-label text-left">
                             <input type="checkbox" name="order" value="1"
-                                {{ old('default_customer') ? 'checked' : '' }}>
+                                {{ old('order') ? 'checked' : '' }}>
                             Cho phép order
                             <i class="fa fa-info-circle text-primary" data-toggle="tooltip" data-placement="right"
                             title="Chọn để đánh dấu cho phép order khi hết hàng"

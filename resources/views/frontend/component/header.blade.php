@@ -22,7 +22,7 @@
                     <div class="uk-flex uk-flex-middle">
                         <div class="header-cart">
                             <div class="uk-flex uk-flex-middle">
-                                <a href="{{ route('cart.checkout') }}" class="cart-text">Giỏ Hàng</a>
+                            <a href="{{ route('cart.checkout2', ['type' => 2]) }}" class="cart-text">Giỏ Hàng2</a>
                                 <div class="cart-mini">
 
                                     <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -37,10 +37,7 @@
                                             </clipPath>
                                         </defs>
                                     </svg>
-
-
                                     <a href="{{ route('cart.checkout') }}">
-
                                         <img src="frontend/resources/img/shopping-cart.png" alt="cart image" style="margin-bottom: 30px">
                                     </a>
 

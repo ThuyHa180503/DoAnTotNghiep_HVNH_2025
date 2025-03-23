@@ -132,3 +132,124 @@ $(document).ready(function () {
 
 
 </script>
+<!-- 
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách thương hiệu và danh mục</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .brand-container {
+            max-width: 600px;
+        }
+        .brand {
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 8px;
+            background: #f1f1f1;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            border-radius: 5px;
+        }
+        .toggle-btn {
+            margin-right: 10px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .category-list {
+            display: none;
+            padding-left: 20px;
+        }
+        .category {
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+        .discount-input {
+            margin-left: auto;
+            padding: 3px;
+            width: 70px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .price-dropdown {
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Tạo nhóm giá</h2>
+
+    <label for="group-name">Tên nhóm giá:</label>
+    <input type="text" id="group-name" placeholder="Nhập tên nhóm giá" style="width: 100%; padding: 5px; margin-bottom: 10px;">
+
+    <div class="brand-container">
+
+        <!-- Thương hiệu MLB -->
+        <div class="brand" data-brand="MLB">
+            <span class="toggle-btn">[+]</span> MLB
+            <select class="price-dropdown">
+                <option value="">Chọn giá</option>
+                <option value="100k">100k</option>
+                <option value="200k">200k</option>
+            </select>
+        </div>
+        <div class="category-list" id="MLB">
+            <div class="category">Quần áo <input type="text" class="discount-input" placeholder="Giảm giá %"></div>
+            <div class="category">Mũ <input type="text" class="discount-input" placeholder="Giảm giá %"></div>
+        </div>
+
+        <!-- Thương hiệu Nike -->
+        <div class="brand" data-brand="Nike">
+            <span class="toggle-btn">[+]</span> Nike
+            <select class="price-dropdown">
+                <option value="">Chọn giá</option>
+                <option value="150k">150k</option>
+                <option value="250k">250k</option>
+            </select>
+        </div>
+        <div class="category-list" id="Nike">
+            <div class="category">Giày <input type="text" class="discount-input" placeholder="Giảm giá %"></div>
+            <div class="category">Quần áo thể thao <input type="text" class="discount-input" placeholder="Giảm giá %"></div>
+        </div>
+
+        <!-- Thương hiệu Adidas -->
+        <div class="brand" data-brand="Adidas">
+            <span class="toggle-btn">[+]</span> Adidas
+            <select class="price-dropdown">
+                <option value="">Chọn giá</option>
+                <option value="180k">180k</option>
+                <option value="280k">280k</option>
+            </select>
+        </div>
+        <div class="category-list" id="Adidas">
+            <div class="category">Áo khoác <input type="text" class="discount-input" placeholder="Giảm giá %"></div>
+            <div class="category">Giày thể thao <input type="text" class="discount-input" placeholder="Giảm giá %"></div>
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $(".brand").click(function () {
+                let brandName = $(this).data("brand");
+                let categoryList = $("#" + brandName);
+                let toggleBtn = $(this).find(".toggle-btn");
+
+                categoryList.slideToggle();
+                toggleBtn.text(categoryList.is(":visible") ? "[-]" : "[+]");
+            });
+        });
+    </script>
+
+</body>
+</html> -->

@@ -15,8 +15,8 @@ class Price_range extends Model
     'sub_brand_id',
     'value_type',
     'value',
-    'range_min',
-    'range_max',
+    'price_min',
+    'price_max',
     'updated_at',
     'created_at'
 ];

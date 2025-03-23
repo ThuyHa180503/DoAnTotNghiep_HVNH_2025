@@ -45,9 +45,16 @@
                 <td>
                     <input type="text" name="order" value="{{ $product->order }}" class="form-control sort-order text-right" data-id="{{ $product->id }}" data-model="{{ $config['model'] }}">
                 </td>
-                <td class="text-center js-switch-{{ $product->id }}"> 
-                    <input type="checkbox" value="{{ $product->publish }}" class="js-switch status " data-field="publish" data-model="{{ $config['model'] }}" {{ ($product->publish == 2) ? 'checked' : '' }} data-modelId="{{ $product->id }}" />
+                <td class="text-center">
+                    <form action="{{ route('product.togglePublish', ['id' => $product->id]) }}" method="POST">
+                        @csrf
+                        @method('PUT') 
+                        <input type="hidden" name="publish" value="1">
+                        <input type="checkbox" name="publish" value="2" class="js-switch status " 
+                            onchange="this.form.submit()" {{ $product->publish == 2 ? 'checked' : '' }}>
+                    </form>
                 </td>
+
                 <td class="text-center"> 
                     <a href="{{ route('product.edit', [$product->id, $queryUrl ?? 'p']) }}" class="btn btn-success"><i class="fa fa-edit"></i></a>
                     <a href="{{ route('product.delete', $product->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>

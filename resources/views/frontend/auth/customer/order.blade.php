@@ -3,16 +3,30 @@
 <div class="container p-5">
     <div class="row">
         <div class="col-12 col-md-4 col-lg-3 mx-auto">
-            <div class="list-group">
-                <a href="{{ route('customer.profile') }}" class="list-group-item list-group-item-action" aria-current="true">
-                    Tài khoản của tôi
-                </a>
-                <a href="{{ route('customer.password.change') }}" class="list-group-item list-group-item-action">Đổi mật khẩu</a>
-                <a href="{{ route('customer.wallet') }}" class="list-group-item list-group-item-action">Quản lý ví</a>
-                <a href="{{ route('customer.order') }}" class="list-group-item list-group-item-action active">Đơn hàng</a>
-                <a href="{{ route('customer.createCustomer') }}" class="list-group-item list-group-item-action">Thêm mới cộng tác viên</a>
-                <a href="{{ route('customer.logout') }}" class="list-group-item list-group-item-action">Đăng xuất</a>
-            </div>
+        <div class="list-group">
+            <a href="{{ route('customer.profile') }}" class="list-group-item list-group-item-action" aria-current="true">
+                Tài khoản của tôi
+            </a>
+            <a href="{{ route('customer.password.change') }}" class="list-group-item list-group-item-action">Đổi mật khẩu</a>
+            
+            @if(auth()->guard('customer')->check())
+                @php
+                    $customer = auth()->guard('customer')->user();
+                @endphp
+
+                @if($customer->customer_catalogue_id == 1 ||$customer->customer_catalogue_id == 2)
+                    
+                    <a href="{{ route('customer.registerCustomer') }}" class="list-group-item list-group-item-action">Đăng ký cộng tác viên</a>
+                @else
+                    <a href="{{ route('customer.wallet') }}" class="list-group-item list-group-item-action">Quản lý ví</a>
+                    <a href="{{ route('customer.createCustomer') }}" class="list-group-item list-group-item-action">Thêm mới cộng tác viên</a>
+                @endif
+            @endif
+
+            <a href="{{ route('customer.order') }}" class="list-group-item list-group-item-action active">Đơn hàng</a>
+            <a href="{{ route('customer.logout') }}" class="list-group-item list-group-item-action">Đăng xuất</a>
+        </div>
+
 
         </div>
         <div class="col-12 col-md-8 col-lg-9 mx-auto">

@@ -116,6 +116,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
                 'products.publish',
                 'products.follow',
                 'products.price',
+                'products.order',
                 'products.code',
                 'products.made_in',
                 'products.attributeCatalogue',

@@ -30,7 +30,9 @@ class Product extends Model
         'warranty',
         'check',
         'product_brand_id',
-        'order'
+        'order',
+        'weight',
+        'currency'
     ];
 
     protected $casts = [

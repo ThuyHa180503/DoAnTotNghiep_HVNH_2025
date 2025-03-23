@@ -39,7 +39,7 @@
                         <td><input type="checkbox" class="input-checkbox checkBoxItem" disabled></td>
                         <td colspan="5">|---|--- {{ $sub_name }}</td>
                     </tr>
-
+                    
                     @foreach($priceRanges as $priceRange)
                         {{-- Hiển thị cấp con (price_ranges->name) --}}
                         <tr id="row-{{ $priceRange->id }}">
@@ -49,9 +49,9 @@
                             <td>|---|---|--- {{ $priceRange->name }}</td>
                             <td>
                                 @if(fmod($priceRange->range_from, 1) == 0 && fmod($priceRange->range_to, 1) == 0)
-                                    {{ number_format($priceRange->range_from, 0) }} - {{ number_format($priceRange->range_to, 0) }}
+                                    {{ number_format($priceRange->price_min, 0) }}đ- {{ number_format($priceRange->price_max, 0) }}đ
                                 @else
-                                    {{ number_format($priceRange->range_from, 2) }} - {{ number_format($priceRange->range_to, 2) }}
+                                    {{ number_format($priceRange->price_min, 2) }}đ - {{ number_format($priceRange->price_max, 2) }}đ
                                 @endif
                             </td>
                             <td>

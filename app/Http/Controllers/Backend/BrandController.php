@@ -73,16 +73,17 @@ class BrandController extends Controller
     $perPage = $request->get('perpage', 20);
     $publish = $request->get('publish', null);
     $keyword = $request->get('keyword', '');
-    $product_brands = ProductBrand::with('brand_language')
-        ->when($publish !== null, function ($query) use ($publish) {
-            return $query->where('publish', $publish);
+    
+    $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
+        ->join('product_brand_language', 'product_brand_language.product_brand_id', '=', 'product_brands.id')
+        ->when(!is_null($publish) && $publish != 0, function ($query) use ($publish) {
+            return $query->where('product_brands.publish', $publish);
         })
-        ->when($keyword !== '', function ($query) use ($keyword) {
-            return $query->whereHas('brand_language', function ($q) use ($keyword) {
-                $q->where('name', 'LIKE', "%{$keyword}%");
-            });
+        ->when(!empty($keyword), function ($query) use ($keyword) {
+            return $query->where('product_brand_language.name', 'LIKE', "%{$keyword}%");
         })
         ->paginate($perPage);
+    
     $config = [
         'js' => [
             'backend/js/plugins/switchery/switchery.js',
