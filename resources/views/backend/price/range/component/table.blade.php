@@ -3,7 +3,7 @@
     $queryUrl = rtrim($query, '=');
 @endphp
 
-<table class="table table-striped table-bordered">
+<table class="table table-striped table-bordered ">
     <thead>
         <tr>
             <th style="width:50px;">
@@ -48,11 +48,11 @@
                             </td>
                             <td>|---|---|--- {{ $priceRange->name }}</td>
                             <td>
-                                @if(fmod($priceRange->range_from, 1) == 0 && fmod($priceRange->range_to, 1) == 0)
-                                    {{ number_format($priceRange->price_min, 0) }}đ- {{ number_format($priceRange->price_max, 0) }}đ
-                                @else
-                                    {{ number_format($priceRange->price_min, 2) }}đ - {{ number_format($priceRange->price_max, 2) }}đ
-                                @endif
+                            @if(fmod($priceRange->range_from, 1) == 0 && fmod($priceRange->range_to, 1) == 0)
+                                {{ number_format($priceRange->price_min, 0, '.', '.') }}VNĐ - {{ number_format($priceRange->price_max, 0, '.', '.') }}VNĐ
+                            @else
+                                {{ number_format($priceRange->price_min, 2, '.', '.') }}VNĐ - {{ number_format($priceRange->price_max, 2, '.', '.') }}VNĐ
+                            @endif
                             </td>
                             <td>
                                 @if ($priceRange->value_type == 'percentage')
@@ -62,23 +62,32 @@
                                 @endif
                             </td>
                             <td class="text-right">
-                                @if(fmod($priceRange->value, 1) == 0)
-                                    {{ number_format($priceRange->value, 0) }}
-                                @else
-                                    {{ number_format($priceRange->value, 2) }}
-                                @endif
+                            @if(fmod($priceRange->value, 1) == 0)
+                                {{ number_format($priceRange->value, 0, '.', '.') }}
+                            @else
+                                {{ number_format($priceRange->value, 2, '.', '.') }}
+                            @endif
                             </td>
                             <td class="text-center">
                                 <a href="{{ route('price_range.edit', [$priceRange->price_range_id, $queryUrl ?? '']) }}" class="btn btn-success">
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <form action="{{ route('price_range.destroy', $priceRange->price_range_id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </form>
+                                <form action="{{ route('price_range.destroy', $priceRange->price_range_id) }}" method="POST" style="display:inline;" onsubmit="return confirmDelete(event);">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+
+                            <script>
+                            function confirmDelete(event) {
+                                if (!confirm("Bạn có chắc chắn muốn xóa không? Hành động này có thể ảnh hưởng nghiêm trọng và không thể hoàn tác!")) {
+                                    event.preventDefault(); // Ngăn form gửi đi nếu chọn "Hủy"
+                                }
+                            }
+                            </script>
+
                             </td>
                         </tr>
                     @endforeach

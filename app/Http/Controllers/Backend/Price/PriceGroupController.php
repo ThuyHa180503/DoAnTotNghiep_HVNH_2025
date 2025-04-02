@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Backend\Price;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Interfaces\AttributeCatalogueServiceInterface  as AttributeCatalogueService;
@@ -8,6 +9,10 @@ use App\Repositories\Interfaces\AttributeCatalogueRepositoryInterface  as Attrib
 use App\Classes\Nestedsetbie;
 use App\Models\Language;
 use App\Models\Price_group;
+use App\Models\Price_group_deatil;
+use App\Models\Price_group_history;
+use App\Models\Price_group_history_deatil;
+use App\Models\PriceGroupDetail;
 use App\Models\ProductBrand;
 use App\Models\ProductCatalogue;
 use App\Models\Sub_brand;
@@ -27,10 +32,10 @@ class PriceGroupController extends Controller
     public function __construct(
         AttributeCatalogueService $attributeCatalogueService,
         AttributeCatalogueRepository $attributeCatalogueRepository,
-        
+
         AttributeCatalogueRepository $attributeCatalogue,
-    ){
-        $this->middleware(function($request, $next){
+    ) {
+        $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
             $language = Language::where('canonical', $locale)->first();
             $this->language = $language->id;
@@ -44,30 +49,29 @@ class PriceGroupController extends Controller
         $this->attributeCatalogue = $attributeCatalogue;
     }
 
-    private function initialize(){
+    private function initialize()
+    {
         $this->nestedset = new Nestedsetbie([
             'table' => 'attribute_catalogues',
             'foreignkey' => 'attribute_catalogue_id',
             'language_id' =>  $this->language,
         ]);
-    } 
-    public function index(Request $request){
-        $perPage = $request->perpage ?? 20; 
+    }
+    public function index(Request $request)
+    {
+        $perPage = $request->perpage ?? 20;
+        $keyword = $request->keyword ?? null;
 
-$price_groups = DB::table('price_group')
-    ->leftJoin('product_brand_language', 'price_group.product_brand_id', '=', 'product_brand_language.product_brand_id')
-    ->leftJoin('product_catalogue_language', 'price_group.product_catalogue_id', '=', 'product_catalogue_language.product_catalogue_id')
-    ->leftJoin('sub_brands', 'price_group.sub_brand_id', '=', 'sub_brands.id')
-    ->select(
-        'price_group.*',
-        'product_brand_language.name as brand_name',
-        'product_catalogue_language.name as catalogue_name',
-        'sub_brands.name as sub_brand_name'
-    )
-    ->paginate($perPage);
+        $query = Price_group::query();
 
+        if (request()->has('publish')) {
+            $query->where('publish', request('publish'));
+        }
 
-
+        if (!empty(request('keyword'))) {
+            $query->where('name', 'LIKE', '%' . request('keyword') . '%');
+        }
+        $price_groups = $query->paginate($perPage);
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -88,7 +92,8 @@ $price_groups = DB::table('price_group')
         ));
     }
 
-    public function create(){
+    public function create()
+    {
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -104,16 +109,16 @@ $price_groups = DB::table('price_group')
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
 
-        $categorys=ProductCatalogue::with('product_catalogue_language')->where('parent_id',45)->get();
+        $categorys = ProductCatalogue::with('product_catalogue_language')->get();
         $brands = ProductBrand::select(
-            'product_brands.*', 
+            'product_brands.*',
             'product_brand_language.*'
         )
-        ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
-        ->get();
-        
-        $sub_brands=Sub_brand::all();
-        
+            ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+            ->get();
+
+        $sub_brands = Sub_brand::all();
+
         $template = 'backend.price.group.store';
         return view('backend.dashboard.layout', compact(
             'template',
@@ -124,37 +129,123 @@ $price_groups = DB::table('price_group')
             'sub_brands'
         ));
     }
-    /**
-     * Display the specified resource.
-     */
+
+
+
     public function store(Request $request)
-     {
-        
-        $data=$request->except('send');
-        if(Price_group::create($data)){
-            return redirect()->route('price_group.index')->with('success','Thêm mới bản ghi thành công');
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|unique:price_group,name|max:255',
+            'shipping' => 'required|numeric|min:0',
+            'exchange_rate' => 'required|numeric|min:0',
+
+            'product_brand_id' => 'required|array',
+            'product_brand_id.*' => 'integer|exists:product_brands,id',
+
+            'sub_brand_id' => 'nullable|array',
+            'sub_brand_id.*' => 'integer|exists:sub_brands,id',
+
+            'product_catalogue_id' => 'required|array',
+            'product_catalogue_id.*' => 'exists:product_catalogues,id',
+
+            'discount' => 'nullable|array',
+            'discount.*' => 'array',
+            'discount.*.*' => 'numeric|min:0',
+        ], [
+            'name.required' => 'Tên nhóm giá không được để trống.',
+            'name.string' => 'Tên nhóm giá phải là chuỗi ký tự.',
+            'name.unique' => 'Tên nhóm giá đã tồn tại, vui lòng chọn tên khác.',
+            'name.max' => 'Tên nhóm giá không được vượt quá 255 ký tự.',
+
+            'shipping.required' => 'Phí vận chuyển không được để trống.',
+            'shipping.numeric' => 'Phí vận chuyển phải là số.',
+            'shipping.min' => 'Phí vận chuyển không được nhỏ hơn 0.',
+
+            'exchange_rate.required' => 'Tỷ giá không được để trống.',
+            'exchange_rate.numeric' => 'Tỷ giá phải là số.',
+            'exchange_rate.min' => 'Tỷ giá không được nhỏ hơn 0.',
+
+            'product_brand_id.required' => 'Thương hiệu sản phẩm là bắt buộc.',
+            'product_brand_id.array' => 'Thương hiệu sản phẩm phải là mảng.',
+            'product_brand_id.*.integer' => 'Mã thương hiệu sản phẩm phải là số nguyên.',
+            'product_brand_id.*.exists' => 'Thương hiệu sản phẩm không hợp lệ.',
+
+            'sub_brand_id.array' => 'Thương hiệu phụ phải là mảng.',
+            'sub_brand_id.*.integer' => 'Mã thương hiệu phụ phải là số nguyên.',
+            'sub_brand_id.*.exists' => 'Thương hiệu phụ không hợp lệ.',
+
+            'product_catalogue_id.required' => 'Danh mục sản phẩm là bắt buộc.',
+            'product_catalogue_id.array' => 'Danh mục sản phẩm phải là mảng.',
+            'product_catalogue_id.*.exists' => 'Danh mục sản phẩm không hợp lệ.',
+
+            'discount.array' => 'Danh sách giảm giá phải là mảng.',
+            'discount.*.array' => 'Mỗi giá trị trong giảm giá phải là mảng.',
+            'discount.*.*.numeric' => 'Mức giảm giá phải là số.',
+            'discount.*.*.min' => 'Mức giảm giá không được nhỏ hơn 0.',
+        ]);
+
+        $user_id = auth()->check() ? auth()->user()->id : null;
+
+        // Dữ liệu cho price_group
+        $priceGroupData = [
+            "name" => $request->name,
+            "shipping" => $request->shipping,
+            "exchange_rate" => $request->exchange_rate,
+            'user_id' =>  $user_id
+        ];
+
+
+        $priceGroup = Price_group::create($priceGroupData);
+
+        $priceGroupDetails = [];
+        $data = $request->all();
+
+        foreach ($data['product_catalogue_id'] as $index => $catalogueIds) {
+            foreach ($catalogueIds as $key => $catalogueId) {
+                if (!is_null($data['discount'][$index][$key])) {
+                    $priceGroupDetails[] = [
+                        "price_group_id" => $priceGroup->id,
+                        "product_brand_id" => $data['product_brand_id'][$index],
+                        "sub_brand_id" => $data['sub_brand_id'][$index] ?? null,
+                        "product_catalogue_id" => $catalogueId,
+                        "discount" => $data['discount'][$index][$key],
+                        'user_id' =>  $user_id
+                    ];
+                }
+            }
         }
-        return back()->with('error','Thêm mới bản ghi thất bại');
+        if (!empty($priceGroupDetails)) {
+            Price_group_deatil::insert($priceGroupDetails);
+        }
+
+        // Trả về thông báo thành công
+        return redirect()->route('price_group.index')->with('success', 'Thêm mới bản ghi thành công');
     }
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(string $id)
     {
-        $price_group = DB::table('price_group')
-    ->leftJoin('product_brand_language', 'price_group.product_brand_id', '=', 'product_brand_language.product_brand_id')
-    ->leftJoin('product_catalogue_language', 'price_group.product_catalogue_id', '=', 'product_catalogue_language.product_catalogue_id')
-    ->leftJoin('sub_brands', 'price_group.sub_brand_id', '=', 'sub_brands.id')
-    ->select(
-        'price_group.*',
-        'product_brand_language.name as brand_name',
-        'product_catalogue_language.name as catalogue_name',
-        'sub_brands.name as sub_brand_name'
-    )
-    ->where('price_group.id', $id)
-    ->first();
+        // Lấy thông tin price_group cùng với các details
+        $price_group = Price_group::with('details')->findOrFail($id);
 
+        // Nhóm details theo product_brand_id và sub_brand_id
+        $groupedDetails = $price_group->details->groupBy(function ($detail) {
+            return $detail->product_brand_id . '-' . $detail->sub_brand_id;
+        });
+
+        // Lấy danh sách brands và sub_brands
+        $brands = ProductBrand::select(
+            'product_brands.*',
+            'product_brand_language.*'
+        )
+            ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+            ->get();
+
+        $sub_brands = Sub_brand::all(); // Giả định bảng sub_brands và model SubBrand
+        $categorys = ProductCatalogue::with('product_catalogue_language')->get();
 
         $config = [
             'js' => [
@@ -165,14 +256,12 @@ $price_groups = DB::table('price_group')
                 'backend/css/plugins/switchery/switchery.css',
                 'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
             ],
-            'model' => 'Price_group',
+            'model' => 'PriceGroup',
         ];
-        $config['seo'] = __('messages.attributeCatalogue');
-        $config['method'] = 'create';
-        $dropdown  = $this->nestedset->Dropdown();
-        $categorys=ProductCatalogue::with('product_catalogue_language')->where('parent_id',45)->get();
-        $brands=ProductCatalogue::with('product_catalogue_language')->where('parent_id',22)->get();
-        //dd($categorys);
+        $config['seo'] = 'Sửa nhóm giá';
+        $config['method'] = 'edit';
+        $dropdown = $this->nestedset->Dropdown();
+
         $template = 'backend.price.group.edit';
         return view('backend.dashboard.layout', compact(
             'template',
@@ -180,7 +269,9 @@ $price_groups = DB::table('price_group')
             'config',
             'categorys',
             'brands',
-            'price_group'
+            'sub_brands',
+            'price_group',
+            'groupedDetails' // Truyền nhóm details vào view
         ));
     }
 
@@ -189,21 +280,104 @@ $price_groups = DB::table('price_group')
      */
     public function update(Request $request, string $id)
     {
-        $data=$request->except('send');
-        if(Price_group::findOrfail($id)->update($data)){
-            return redirect()->route('price_group.index')->with('success','Sửa bản ghi thành công');
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'shipping' => 'required|numeric|min:0',
+            'exchange_rate' => 'required|numeric|min:0',
+            'product_brand_id' => 'required|array',
+            'product_brand_id.*' => 'integer|exists:product_brands,id',
+            'sub_brand_id' => 'array',
+            'sub_brand_id.*' => 'integer|exists:sub_brands,id',
+            'product_catalogue_id' => 'required|array',
+            'product_catalogue_id.*' => 'required|array',
+            'product_catalogue_id.*.*' => 'integer|exists:product_catalogues,id',
+            'discount' => 'nullable|array',
+            'discount.*' => 'nullable|array',
+            'discount.*.*' => 'nullable|numeric|min:0',
+        ]);
+
+        $user_id = auth()->check() ? auth()->user()->id : null;
+
+        // **Tìm và cập nhật price_group**
+        $priceGroup = Price_group::findOrFail($id);
+        $priceGroupData = $priceGroup->toArray();
+        unset($priceGroupData['created_at'], $priceGroupData['updated_at'], $priceGroupData['delete_at'], $priceGroupData['id']); // Bỏ 2 trường này
+        $priceGroup->update([
+            "name" => $request->name,
+            "shipping" => $request->shipping,
+            "exchange_rate" => $request->exchange_rate,
+            'user_id' =>  $user_id
+        ]);
+        unset($priceGroupData['created_at'], $priceGroupData['updated_at']);
+
+        // **Lưu bản ghi vào price_group_history**
+        $priceGroupHistory = Price_group_history::updateOrCreate(
+            ['price_group_id' => $priceGroup->id],
+            array_merge($priceGroupData, ['user_id' => $priceGroup->user_id, 'price_group_id' => $priceGroup->id])
+        );
+
+        // **Lưu chi tiết lịch sử vào price_group_history_detail**
+        $oldDetails = Price_group_deatil::where('price_group_id', $id)->get();
+        $historyDetails = [];
+
+        foreach ($oldDetails as $detail) {
+            $detailData = $detail->toArray();
+            unset($detailData['created_at'], $detailData['updated_at'], $detailData['deleted_at'], $detailData['id']);
+
+            $historyDetails[] = array_merge($detailData, [
+                "user_id" => $user_id,
+                'updated_at' => now()
+            ]);
         }
-        return back()->with('error','Sửa bản ghi thất bại');
+        //dd($historyDetails);
+
+        if (!empty($historyDetails)) {
+            Price_group_history_deatil::insert($historyDetails);
+        }
+
+        // **Xóa dữ liệu cũ trong price_group_detail**
+        Price_group_deatil::where('price_group_id', $id)->delete();
+
+        // **Thêm dữ liệu mới vào price_group_detail**
+        $priceGroupDetails = [];
+        foreach ($request->product_catalogue_id as $key => $catalogueIds) {
+            $ids = explode('-', $key);
+            $productBrandId = $ids[0] ?? null;
+            $subBrandId = $ids[1] ?? null;
+
+            foreach ($catalogueIds as $index => $catalogueId) {
+                if (!empty($request->discount[$key][$index])) {
+                    $priceGroupDetails[] = [
+                        "price_group_id" => $id,
+                        "product_brand_id" => $productBrandId,
+                        "sub_brand_id" => $subBrandId,
+                        "product_catalogue_id" => $catalogueId,
+                        "discount" => $request->discount[$key][$index],
+                        'user_id' =>  $user_id,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+            }
+        }
+
+        if (!empty($priceGroupDetails)) {
+            Price_group_deatil::insert($priceGroupDetails);
+        }
+
+        return redirect()->route('price_group.index')->with('success', 'Sửa bản ghi thành công');
     }
+
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        if(Price_group::findOrfail($id)->delete()){
-            return redirect()->route('price_group.index')->with('success','Xoá bản ghi thành công');
+        if (Price_group::findOrfail($id)->delete()) {
+            return redirect()->route('price_group.index')->with('success', 'Xoá bản ghi thành công');
         }
-        return back()->with('error','Xoá bản ghi thất bại');
+        return back()->with('error', 'Xoá bản ghi thất bại');
     }
 }

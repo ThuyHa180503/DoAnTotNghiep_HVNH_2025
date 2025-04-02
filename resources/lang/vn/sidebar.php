@@ -60,12 +60,12 @@ return [
                     'route' => 'product/brand/index'
                 ],
                 [
-                    'title' => 'QL Nhóm giá',
-                    'route' => 'price_group/index'
+                    'title' => 'QL Dải giá',
+                    'route' => 'price_range/index'
                 ],
                 [
-                    'title' => 'Ql Dải giá',
-                    'route' => 'price_range/index'
+                    'title' => 'QL Nhóm giá',
+                    'route' => 'price_group/index'
                 ],
                 [
                     'title' => 'QL Sản phẩm',
@@ -76,7 +76,7 @@ return [
                     'route' => 'attribute/catalogue/index'
                 ],
                 [
-                    'title' => 'QL thuộc tính',
+                    'title' => 'QL Thuộc tính',
                     'route' => 'attribute/index'
                 ],
                 
@@ -91,19 +91,23 @@ return [
                     'title' => 'QL Đơn Hàng',
                     'route' => 'order/index'
                 ],
+                [
+                    'title' => 'QL Đơn Hàng Order',
+                    'route' => 'order2/index'
+                ],
             ]
         ],
         [
-            'title' => 'QL Cộng Tác Viên',
+            'title' => 'QL Khách hàng',
             'icon' => 'fa fa-user',
             'name' => ['customer'],
             'subModule' => [
                 [
-                    'title' => 'QL Loại cộng tác viên',
+                    'title' => 'QL Loại khách hàng',
                     'route' => asset('customer/catalogue/index')
                 ],
                 [
-                    'title' => 'QL Cộng tác viên',
+                    'title' => 'QL Khách hàng',
                     'route' => 'customer/index'
                 ],
                 [
@@ -154,16 +158,16 @@ return [
             ]
         ],
         [
-            'title' => 'QL Nhóm Thành Viên',
+            'title' => 'QL Nhóm Nhân viên',
             'icon' => 'fa fa-user',
             'name' => ['user', 'permission'],
             'subModule' => [
                 [
-                    'title' => 'QL Nhóm Thành Viên',
+                    'title' => 'QL phòng ban',
                     'route' => 'user/catalogue/index'
                 ],
                 [
-                    'title' => 'QL Thành Viên',
+                    'title' => 'QL Nhân viên',
                     'route' => 'user/index'
                 ],
                 [

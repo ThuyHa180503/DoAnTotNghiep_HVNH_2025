@@ -44,13 +44,13 @@ class ProductController extends FrontendController
 
     public function index($id, $request)
     {
+
         $language = $this->language;
         $product = $this->productRepository->getProductById($id, $this->language, config('apps.general.defaultPublish'));
         if (is_null($product)) {
             abort(404);
         }
         $product = $this->productService->combineProductAndPromotion([$id], $product, true);
-
 
         $productCatalogue = $this->productCatalogueRepository->getProductCatalogueById($product->product_catalogue_id, $this->language);
         $breadcrumb = $this->productCatalogueRepository->breadcrumb($productCatalogue, $this->language);
@@ -78,11 +78,6 @@ class ProductController extends FrontendController
             // ['keyword' => 'home-whyus', 'object' => true],
             // ['keyword' => 'posts', 'object' => true],
         ], $this->language);
-
-
-
-
-
         $productSeen = [
             'id' => $product->id,
             'name' => $product->name,
@@ -101,11 +96,10 @@ class ProductController extends FrontendController
 
         $cartSeen = Cart::instance('seen')->content();
 
-
-
         $config = $this->config();
         $system = $this->system;
         $seo = seo($product);
+
         return view('frontend.product.product.index', compact(
             'config',
             'seo',

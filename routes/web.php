@@ -22,6 +22,8 @@ use App\Http\Controllers\Backend\SlideController;
 use App\Http\Controllers\Backend\WidgetController;
 use App\Http\Controllers\Backend\ReportController;
 use App\Http\Controllers\Backend\OrderController;
+use App\Http\Controllers\Backend\Order2Controllder;
+
 
 use App\Http\Controllers\Backend\BrandController;
 
@@ -83,7 +85,7 @@ use App\Http\Controllers\Frontend\MyOrder\MyOrderController;
 |
 */
 
-Route::group(['middleware' => 'license'], function () {
+Route::group(['middleware'], function () {
    /* FRONTEND ROUTES  */
    Route::get('/', [HomeController::class, 'index'])->name('home.index');
 
@@ -145,7 +147,6 @@ Route::group(['middleware' => 'license'], function () {
       Route::get('customer/construction/{id}/product' . config('apps.general.suffix'), [FeCustomerController::class, 'constructionProduct'])->name('customer.construction.product')->where(['id' => '[0-9]+']);
       Route::get('customer/warranty/check' . config('apps.general.suffix'), [FeCustomerController::class, 'warranty'])->name('customer.check.warranty');
       Route::post('customer/warranty/active', [FeCustomerController::class, 'active'])->name('customer.active.warranty');
-      
    });
 
 
@@ -153,8 +154,9 @@ Route::group(['middleware' => 'license'], function () {
    Route::get('danh-sach-yeu-thich' . config('apps.general.suffix'), [FeProductCatalogueController::class, 'wishlist'])->name('product.catalogue.wishlist');
    Route::get('thanh-toan' . config('apps.general.suffix'), [CartController::class, 'checkout'])->name('cart.checkout');
 
-   Route::get('thanh-toan/' . config('apps.general.suffix'), [CartController::class, 'cart'])->name('cart.checkout2');
-   Route::get('thanh-toan/{type}' . config('apps.general.suffix'), [CartController::class, 'checkout'])->name('cart.checkout3');
+   Route::get('thanh-toan/{type}', [CartController::class, 'cart'])->name('cart.checkout2');
+
+   Route::get('thanh-toan/checkout/{type}' . config('apps.general.suffix'), [CartController::class, 'checkout'])->name('cart.checkout3');
 
    Route::get('{canonical}' . config('apps.general.suffix'), [RouterController::class, 'index'])->name('router.index')->where('canonical', '[a-zA-Z0-9-]+');
    Route::get('{canonical}/trang-{page}' . config('apps.general.suffix'), [RouterController::class, 'page'])->name('router.page')->where('canonical', '[a-zA-Z0-9-]+')->where('page', '[0-9]+');
@@ -168,7 +170,10 @@ Route::group(['middleware' => 'license'], function () {
 
    Route::get('cart/{code}/success' . config('apps.general.suffix'), [CartController::class, 'success'])->name('cart.success')->where(['code' => '[0-9]+']);
 
-   Route::post('cart/create-cart', [CartController::class, 'storeCart'])->name('cart.storeCart');
+   Route::post('cart/create-cart2', [CartController::class, 'storeCart'])->name('cart.storeCart2');
+
+   Route::post('cart/create-cart', [CartController::class, 'storeCartOrder'])->name('cart.storeCartOrder');
+
 
 
    /* AGENCY  */
@@ -232,11 +237,11 @@ Route::group(['middleware' => 'license'], function () {
    Route::get('ajax/location/getLocation', [LocationController::class, 'getLocation'])->name('ajax.location.index');
    Route::post('updatePermission', [CustomerCatalogueController::class, 'updatePermission'])->name('customer.catalogue.updatePermission');
 
-      Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
-      Route::post('ajax/cart/update', [AjaxCartController::class, 'update'])->name('ajax.cart.update');
-      Route::post('ajax/cart/delete', [AjaxCartController::class, 'delete'])->name('ajax.cart.delete');
-  
-  
+   Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
+   Route::post('ajax/cart/update', [AjaxCartController::class, 'update'])->name('ajax.cart.update');
+   Route::post('ajax/cart/delete', [AjaxCartController::class, 'delete'])->name('ajax.cart.delete');
+
+
 
 
    Route::get('ajax/dashboard/findModelObject', [AjaxDashboardController::class, 'findModelObject'])->name('ajax.dashboard.findModelObject');
@@ -511,6 +516,14 @@ Route::group(['middleware' => 'license'], function () {
          Route::put('update-order-status/{code}', [OrderController::class, 'updateStatus'])->name('update-order-status');
          Route::get('create', [OrderController::class, 'create'])->name('customer.order.create');
          Route::post('store', [OrderController::class, 'store'])->name('customer.order.store');
+      });
+
+      Route::group(['prefix' => 'order2'], function () {
+         Route::get('index', [Order2Controllder::class, 'index'])->name('order2.index');
+         Route::get('{id}/detail', [Order2Controllder::class, 'detail'])->where(['id' => '[0-9]+'])->name('order2.detail');
+         Route::put('update-order-status/{code}', [Order2Controllder::class, 'updateStatus'])->name('update-order2-status');
+         Route::get('create', [Order2Controllder::class, 'create'])->name('customer.order2.create');
+         Route::post('store', [Order2Controllder::class, 'store'])->name('customer.order2.store');
       });
 
       /*CRM*/

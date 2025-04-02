@@ -85,14 +85,12 @@ if (!function_exists('getPromotionPrice')) {
         return $priceMain - $discountValue;
     }
 }
-
-
 if (!function_exists('getPrice')) {
     function getPrice($product = null)
     {
         // $getId=User::
         $result = [
-            'price' => ($product->price),
+            'price' => ($product->order_price),
             'priceSale' => 0,
             'percent' => 0,
             'html' => ''

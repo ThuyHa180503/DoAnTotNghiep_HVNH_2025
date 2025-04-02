@@ -8,27 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Price_group extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'price_group';
 
     protected $fillable = [
-        'name',
-        'product_catalogue_id',
-        'product_brand_id',
-        'discount',
-        'shipping',
-        'exchange_rate',
-        'sub_brand_id',
+        "name",
+        "shipping",
+        "exchange_rate",
+        "user_id"
     ];
 
-    public function catalogue()
+    public function details()
     {
-        return $this->hasOne(ProductCatalogueLanguage::class, 'product_catalogue_id', 'product_catalogue_id');
+        return $this->hasMany(Price_group_deatil::class, 'price_group_id', 'id');
     }
-
-    public function brand()
-    {
-        return $this->hasOne(ProductCatalogueLanguage::class, 'product_catalogue_id','brand_id');
-    }
-
 }

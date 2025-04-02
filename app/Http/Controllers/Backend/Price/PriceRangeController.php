@@ -29,10 +29,10 @@ class PriceRangeController extends Controller
     public function __construct(
         AttributeCatalogueService $attributeCatalogueService,
         AttributeCatalogueRepository $attributeCatalogueRepository,
-        
+
         AttributeCatalogueRepository $attributeCatalogue,
-    ){
-        $this->middleware(function($request, $next){
+    ) {
+        $this->middleware(function ($request, $next) {
             $locale = app()->getLocale();
             $language = Language::where('canonical', $locale)->first();
             $this->language = $language->id;
@@ -46,40 +46,42 @@ class PriceRangeController extends Controller
         $this->attributeCatalogue = $attributeCatalogue;
     }
 
-    private function initialize(){
+    private function initialize()
+    {
         $this->nestedset = new Nestedsetbie([
             'table' => 'attribute_catalogues',
             'foreignkey' => 'attribute_catalogue_id',
             'language_id' =>  $this->language,
         ]);
-    } 
- 
-    public function index(Request $request){
-        $perPage = $request->perpage ?? 20;
-$query = Price_range::select(
-        'price_ranges.id as price_range_id', 
-        'sub_brands.id as sub_brand_id',    
-        'price_ranges.*', 
-        'product_brand_language.name as brand_name',  
-        'sub_brands.name as sub_name' 
-    )
-    ->leftJoin('sub_brands', 'price_ranges.sub_brand_id', '=', 'sub_brands.id') 
-    ->leftJoin('product_brand_language', 'sub_brands.brand_id', '=', 'product_brand_language.product_brand_id');
-    if ($request->has('keyword') && !empty($request->keyword)) {
-        $keyword = $request->keyword;
-        $query->where(function ($q) use ($keyword) {
-            $q->where('product_brand_language.name', 'LIKE', "%$keyword%")
-            ->orWhere('sub_brands.name', 'LIKE', "%$keyword%")
-            ->orWhere('price_ranges.name', 'LIKE', "%$keyword%"); 
-        });
     }
 
-$query->orderBy('product_brand_language.name');
+    public function index(Request $request)
+    {
+        $perPage = $request->perpage ?? 20;
+        $query = Price_range::select(
+            'price_ranges.id as price_range_id',
+            'sub_brands.id as sub_brand_id',
+            'price_ranges.*',
+            'product_brand_language.name as brand_name',
+            'sub_brands.name as sub_name'
+        )
+            ->leftJoin('sub_brands', 'price_ranges.sub_brand_id', '=', 'sub_brands.id')
+            ->leftJoin('product_brand_language', 'sub_brands.brand_id', '=', 'product_brand_language.product_brand_id');
+        if ($request->has('keyword') && !empty($request->keyword)) {
+            $keyword = $request->keyword;
+            $query->where(function ($q) use ($keyword) {
+                $q->where('product_brand_language.name', 'LIKE', "%$keyword%")
+                    ->orWhere('sub_brands.name', 'LIKE', "%$keyword%")
+                    ->orWhere('price_ranges.name', 'LIKE', "%$keyword%");
+            });
+        }
+
+        $query->orderBy('product_brand_language.name');
 
 
-$price_ranges = $query->paginate($perPage);
+        $price_ranges = $query->paginate($perPage);
 
-    
+
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -100,7 +102,8 @@ $price_ranges = $query->paginate($perPage);
         ));
     }
 
-    public function create(){
+    public function create()
+    {
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -116,12 +119,12 @@ $price_ranges = $query->paginate($perPage);
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
         $brands = ProductBrand::select(
-            'product_brands.*', 
+            'product_brands.*',
             'product_brand_language.*'
         )
-        ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
-        ->get();
-        
+            ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+            ->get();
+
         //dd($categorys);
         $template = 'backend.price.range.store';
         return view('backend.dashboard.layout', compact(
@@ -134,20 +137,33 @@ $price_ranges = $query->paginate($perPage);
     public function store(Request $request)
     {
         $request->validate([
-            'brand_id' => 'required',
-            'range_name' => 'required|string|max:255',
+            'brand_id' => 'required|integer',
+            'range_name' => 'required|string|max:255|unique:sub_brands,name',
             'ranges_data' => 'required|json',
+        ], [
+            'brand_id.required' => 'Trường thương hiệu là bắt buộc.',
+            'brand_id.integer' => 'Thương hiệu phải là một số nguyên hợp lệ.',
+
+            'range_name.required' => 'Tên khoảng giá là bắt buộc.',
+            'range_name.string' => 'Tên khoảng giá phải là một chuỗi ký tự.',
+            'range_name.max' => 'Tên khoảng giá không được vượt quá 255 ký tự.',
+            'range_name.unique' => 'Tên khoảng giá đã tồn tại, vui lòng chọn tên khác.',
+
+            'ranges_data.required' => 'Dữ liệu khoảng giá là bắt buộc.',
+            'ranges_data.json' => 'Dữ liệu khoảng giá phải ở định dạng JSON hợp lệ.',
         ]);
-    
+
+
+
         // Kiểm tra dữ liệu nhận được từ request
         //dd($request->all()); // Debug: Xem toàn bộ dữ liệu trước khi xử lý
-    
+
         $ranges = json_decode($request->ranges_data, true);
-    
+
         if (!is_array($ranges)) {
             return back()->with('error', 'Dữ liệu không hợp lệ.');
         }
-    
+
         try {
             DB::beginTransaction();
 
@@ -155,32 +171,32 @@ $price_ranges = $query->paginate($perPage);
                 'brand_id' => $request->brand_id,
                 'name' => $request->range_name ?? 'Không xác định',
             ]);
-    
+
 
             $level = 1;
             foreach ($ranges as $range) {
 
-                
+
                 Price_range::create([
-                    'sub_brand_id' => $subBrand->id, 
+                    'sub_brand_id' => $subBrand->id,
                     'name' => 'Mức ' . $level,
-                    'price_min' => $range['from'] ?? 0, 
+                    'price_min' => $range['from'] ?? 0,
                     'price_max' => $range['to'] ?? 0,
                     'value_type' => $range['valueType'] ?? 'fixed',
-                    'value' => $range['value'] ?? 0, 
+                    'value' => $range['value'] ?? 0,
                 ]);
                 $level++;
             }
-    
-            DB::commit(); 
-    
+
+            DB::commit();
+
             return redirect()->route('price_range.index')->with('success', 'Thêm mới bản ghi thành công');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Lỗi khi thêm dữ liệu: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -217,21 +233,32 @@ $price_ranges = $query->paginate($perPage);
      */
     public function update(Request $request, string $id)
     {
-        $data=$request->except('send');
-        if(Price_range::findOrfail($id)->update($data)){
-            return redirect()->route('price_range.index')->with('success','Sửa bản ghi thành công');
+        $data = $request->except('send');
+        if (Price_range::findOrfail($id)->update($data)) {
+            return redirect()->route('price_range.index')->with('success', 'Sửa bản ghi thành công');
         }
-        return back()->with('error','Sửa bản ghi thất bại');
+        return back()->with('error', 'Sửa bản ghi thất bại');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        if(Price_range::findOrfail($id)->delete()){
-            return redirect()->route('price_range.index')->with('success','Xoá bản ghi thành công');
+        $priceRange = Price_range::findOrFail($id);
+
+        $subBrandId = $priceRange->sub_brand_id;
+
+        if ($priceRange->delete()) {
+            $remainingRecords = Price_range::where('sub_brand_id', $subBrandId)->count();
+
+            if ($remainingRecords == 0) {
+                Sub_brand::where('id', $subBrandId)->delete();
+            }
+
+            return redirect()->route('price_range.index')->with('success', 'Xoá bản ghi thành công');
         }
-        return back()->with('error','Xoá bản ghi thất bại');
+
+        return back()->with('error', 'Xoá bản ghi thất bại');
     }
 }

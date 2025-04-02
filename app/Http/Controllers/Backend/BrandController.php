@@ -67,23 +67,81 @@ class BrandController extends Controller
     }
     
 
-    public function index(Request $request)
+//     public function index(Request $request)
+// {
+//     $this->authorize('modules', 'product.catalogue.index');
+//     $perPage = $request->get('perpage', 20);
+//     $publish = $request->get('publish', null);
+//     $keyword = $request->get('keyword', '');
+    
+//     $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
+//         ->join('product_brand_language', 'product_brand_language.product_brand_id', '=', 'product_brands.id')
+//         ->when(!is_null($publish) && $publish != 0, function ($query) use ($publish) {
+//             return $query->where('product_brands.publish', $publish);
+//         })
+//         ->when(!empty($keyword), function ($query) use ($keyword) {
+//             return $query->where('product_brand_language.name', 'LIKE', "%{$keyword}%");
+//         })
+//         ->paginate($perPage);
+    
+//     $config = [
+//         'js' => [
+//             'backend/js/plugins/switchery/switchery.js',
+//             'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+//         ],
+//         'css' => [
+//             'backend/css/plugins/switchery/switchery.css',
+//             'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+//         ],
+//         'model' => 'ProductCatalogue',
+//     ];
+//     $config['seo'] = __('messages.productCatalogue');
+//     $template = 'backend.brand.index';
+
+//     return view('backend.dashboard.layout', compact(
+//         'template',
+//         'config',
+//         'product_brands'
+//     ));
+// }
+
+public function index(Request $request)
 {
     $this->authorize('modules', 'product.catalogue.index');
+
+
+    // Lấy giá trị từ request, nếu không có thì sử dụng giá trị mặc định
     $perPage = $request->get('perpage', 20);
     $publish = $request->get('publish', null);
     $keyword = $request->get('keyword', '');
-    
-    $product_brands = ProductBrand::select('product_brands.*', 'product_brand_language.name as brand_name')
-        ->join('product_brand_language', 'product_brand_language.product_brand_id', '=', 'product_brands.id')
-        ->when(!is_null($publish) && $publish != 0, function ($query) use ($publish) {
-            return $query->where('product_brands.publish', $publish);
-        })
-        ->when(!empty($keyword), function ($query) use ($keyword) {
-            return $query->where('product_brand_language.name', 'LIKE', "%{$keyword}%");
-        })
-        ->paginate($perPage);
-    
+
+
+    // Query danh sách thương hiệu
+    $product_brands = ProductBrand::with('brand_language');
+
+
+    // Nếu `publish` không tồn tại trong request hoặc rỗng, lấy mặc định cả 1 và 2
+    if ($publish === null || $publish === ''|| $publish === '0') {
+        $product_brands = $product_brands->whereIn('publish', [1, 2]);
+    } else {
+        // Nếu `publish` có giá trị (kể cả `0`), lọc theo giá trị đó
+        $product_brands = $product_brands->where('publish', $publish);
+    }
+
+
+    // Nếu có từ khóa tìm kiếm
+    if (!empty($keyword)) {
+        $product_brands = $product_brands->whereHas('brand_language', function ($query) use ($keyword) {
+            $query->where('name', 'LIKE', "%{$keyword}%");
+        });
+    }
+
+
+    // Phân trang dữ liệu
+    $product_brands = $product_brands->paginate($perPage);
+
+
+    // Cấu hình giao diện
     $config = [
         'js' => [
             'backend/js/plugins/switchery/switchery.js',
@@ -98,13 +156,14 @@ class BrandController extends Controller
     $config['seo'] = __('messages.productCatalogue');
     $template = 'backend.brand.index';
 
+
+    // Render giao diện với dữ liệu
     return view('backend.dashboard.layout', compact(
         'template',
         'config',
         'product_brands'
     ));
 }
-
 
     public function create()
     {
