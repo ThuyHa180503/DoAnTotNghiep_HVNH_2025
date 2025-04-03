@@ -91,26 +91,9 @@
         <div class="col-md-12 text-right mt-3">
             <button type="button" id="addPriceGroup" class="btn btn-primary">Thêm mới nhóm</button>
         </div>
-        @include('backend.dashboard.component.button')
 
-        <div class="col-md-12">
-            <div class="ibox">
-                <div class="ibox-content text-right">
-                    <div class="row text-right">
-                        <div class="col-md-4 text-right">
-                        <div class="col-md-4 text-right">
-                        <button type="button" class="btn btn-primary">Lưu lại</button>
-                        </div>
-                        <div class="col-md-4 text-right">
-                        <button type="button"  class="btn btn-primary">Lưu lại tất cả</button>
-                        
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        </div>
-        </div>
+        @include('backend.dashboard.component.button')
+    </div>
 </form>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

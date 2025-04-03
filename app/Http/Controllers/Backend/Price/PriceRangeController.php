@@ -81,7 +81,7 @@ class PriceRangeController extends Controller
 
         $price_ranges = $query->paginate($perPage);
 
-
+        //dd($price_ranges);
         $config = [
             'js' => [
                 'backend/js/plugins/switchery/switchery.js',
@@ -228,6 +228,42 @@ class PriceRangeController extends Controller
         ));
     }
 
+
+    public function edi_sub_price_range(string $sub_name)
+    {
+        $config = [
+            'js' => [
+                'backend/js/plugins/switchery/switchery.js',
+                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js'
+            ],
+            'css' => [
+                'backend/css/plugins/switchery/switchery.css',
+                'https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css'
+            ],
+            'model' => 'Price_group',
+        ];
+        $config['seo'] = __('messages.attributeCatalogue');
+        $config['method'] = 'create';
+        $dropdown  = $this->nestedset->Dropdown();
+        $price_ranges = Sub_brand::where('name', $sub_name)->with('prices')->get();
+        $brands = ProductBrand::select(
+            'product_brands.*',
+            'product_brand_language.*'
+        )
+            ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
+            ->get();
+        // dd($price_ranges);
+        //dd($categorys);
+        $template = 'backend.price.range.edit_all';
+        return view('backend.dashboard.layout', compact(
+            'template',
+            'dropdown',
+            'config',
+            'price_ranges',
+            'brands'
+        ));
+    }
+
     /**
      * Update the specified resource in storage.
      */
@@ -238,6 +274,36 @@ class PriceRangeController extends Controller
             return redirect()->route('price_range.index')->with('success', 'Sửa bản ghi thành công');
         }
         return back()->with('error', 'Sửa bản ghi thất bại');
+    }
+
+
+    public function update2(Request $request, string $id)
+    {
+       //dd($request->all());
+        $sub_brand = Sub_brand::where('name', $request->range_name)
+                ->where('brand_id', $request->brand_id)
+                ->first();
+
+                
+        $price_ranges=Price_range::where('sub_brand_id',$sub_brand->id)->get();
+        foreach($price_ranges as $price_range){
+            $price_range->delete();
+        }
+        $ranges = json_decode($request->ranges_data, true);
+        $level = 1;
+        foreach ($ranges as $range) {
+            Price_range::create([
+                'sub_brand_id' => $sub_brand->id,
+                'name' => 'Mức ' . $level,
+                'price_min' => $range['from'] ?? 0,
+                'price_max' => $range['to'] ?? 0,
+                'value_type' => $range['valueType'] ?? 'fixed',
+                'value' => $range['value'] ?? 0,
+            ]);
+            $level++;
+        }
+        return redirect()->route('price_range.index')->with('success', 'Sửa bản ghi thành công');
+       
     }
 
     /**

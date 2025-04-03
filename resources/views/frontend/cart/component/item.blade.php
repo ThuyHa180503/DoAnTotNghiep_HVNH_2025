@@ -5,6 +5,7 @@
         @php
         $carts = $carts ?? [];
         $tongTien = empty($carts) ? 0 : collect($carts)->sum(fn($cart) => ($cart->price ?? 0) * ($cart->qty ?? 0));
+
         @endphp
         @foreach($carts as $keyCart => $cart)
         <div class="cart-item">

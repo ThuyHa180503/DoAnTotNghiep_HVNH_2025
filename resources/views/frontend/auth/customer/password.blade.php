@@ -19,6 +19,7 @@
                             <form action="{{ route('customer.password.recovery') }}" method="post" class="uk-form uk-form-horizontal login-form profile-form">
 @csrf
 
+
 <div class="uk-form-row form-row">
     <label class="uk-form-label" for="form-h-it">Mật khẩu cũ</label>
     <div class="uk-form-controls">
@@ -53,6 +54,7 @@
     </div>
 </div>
 
+
 <button type="submit" name="send" value="create">Đổi mật khẩu</button>
 </form>
 </div>
@@ -63,45 +65,49 @@
 </div> --}}
 
 
+
+
 <div class="container p-5">
     <div class="row">
-         <!-- Navigation Tabs Card -->
-         <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <div class="d-flex flex-row flex-wrap border-bottom">
-                <a href="{{ route('customer.profile') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.profile') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
-                    Tài khoản của tôi
-                </a>
-                <a href="{{ route('customer.password.change') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.password.change') ? 'fw-bold border-bottom border-3' : 'text-dark' }}" style="color: #7995a3; font-weight: 500;">
-                    Đổi mật khẩu
-                </a>
-                @if(auth()->guard('customer')->check())
+        <!-- Navigation Tabs Card -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex flex-row flex-wrap border-bottom">
+                    <a href="{{ route('customer.profile') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.profile') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
+                        Tài khoản của tôi
+                    </a>
+                    <a href="{{ route('customer.password.change') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.password.change') ? 'fw-bold border-bottom border-3' : 'text-dark' }}" style="color: #7995a3; font-weight: 500;">
+                        Đổi mật khẩu
+                    </a>
+                    @if(auth()->guard('customer')->check())
                     @php
-                        $customer = auth()->guard('customer')->user();
+                    $customer = auth()->guard('customer')->user();
                     @endphp
 
+
                     @if($customer->customer_catalogue_id == 1 || $customer->customer_catalogue_id == 2)
-                        <a href="{{ route('customer.registerCustomer') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.registerCustomer') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
-                            Đăng ký cộng tác viên
-                        </a>
+                    <a href="{{ route('customer.registerCustomer') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.registerCustomer') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
+                        Đăng ký cộng tác viên
+                    </a>
                     @else
-                        <a href="{{ route('customer.wallet') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.wallet') ? 'fw-bold border-bottom border-3' : 'text-dark' }}" >
-                            Quản lý ví
-                        </a>
-                        <a href="{{ route('customer.createCustomer') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.createCustomer') ? 'fw-bold border-bottom border-3' : 'text-dark' }}" style="color:#7A95A2;">
-                            Giới thiệu cộng tác viên
-                        </a>
+                    <a href="{{ route('customer.wallet') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.wallet') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
+                        Quản lý ví
+                    </a>
+                    <a href="{{ route('customer.createCustomer') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.createCustomer') ? 'fw-bold border-bottom border-3' : 'text-dark' }}" style="color:#7A95A2;">
+                        Giới thiệu cộng tác viên
+                    </a>
                     @endif
-                @endif
-                <a href="{{ route('customer.order') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.order') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
-                    Đơn hàng
-                </a>
-                <a href="{{ route('customer.logout') }}" class="btn btn-link text-decoration-none px-3 py-2 text-danger">
-                    Đăng xuất
-                </a>
+                    @endif
+                    <a href="{{ route('customer.order') }}" class="btn btn-link text-decoration-none px-3 py-2 {{ request()->routeIs('customer.order') ? 'fw-bold border-bottom border-3' : 'text-dark' }}">
+                        Đơn hàng
+                    </a>
+                    <a href="{{ route('customer.logout') }}" class="btn btn-link text-decoration-none px-3 py-2 text-danger">
+                        Đăng xuất
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
+
 
         <div class="container">
             @include('backend/dashboard/component/formError')
@@ -110,6 +116,7 @@
                 @csrf
                 <h4 class="text-center mb-3">Thay đổi mật khẩu</h4>
                 <p>Quản lý thông tin hồ sơ để bảo mật tài khoản</p>
+
 
                 <div class="row mb-3">
                     <div class="col-lg-2">
@@ -125,6 +132,7 @@
                     </div>
                 </div>
 
+
                 <div class="row mb-3">
                     <div class="col-lg-2">
                         <label class="mt-1" for="">Mật khẩu mới</label>
@@ -138,6 +146,7 @@
                             value="">
                     </div>
                 </div>
+
 
                 <div class="row mb-3">
                     <div class="col-lg-2">
@@ -155,18 +164,27 @@
 
 
 
+
+
+
                 <div class="d-flex justify-content-start align-items-center">
                     <button type="submit" class="btn-main">Đổi mật khẩu</button>
 
+
                 </div>
+
 
             </form>
         </div>
 
+
     </div>
 </div>
 
+
 @endsection
+
+
 
 
 @section('css')

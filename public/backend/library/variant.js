@@ -195,7 +195,7 @@
 
         $td = $('<td>').addClass('hidden td-variant')
 
-        let mainPrice = $('input[name=price]').val()
+        let mainPrice = $('input[name=order_price]').val()
         let mainSku = $('input[name=code]').val()
         let inputHiddenFields = [
             { name: 'variant[quantity][]', class: 'variant_quantity', value: '' },

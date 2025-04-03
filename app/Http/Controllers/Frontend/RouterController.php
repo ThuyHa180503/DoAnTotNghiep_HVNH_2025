@@ -22,7 +22,8 @@ class RouterController extends FrontendController
 
     public function index(string $canonical = '', Request $request)
     {
-
+        //dd($canonical);
+        //dd($this->router);
         $this->getRouter($canonical);
         if (!is_null($this->router) && !empty($this->router)) {
             $method = 'index';

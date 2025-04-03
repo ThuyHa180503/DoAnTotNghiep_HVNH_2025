@@ -19,6 +19,8 @@ use App\Models\CartDetail;
 use App\Models\CartOrderDetail;
 use App\Models\CartOrders;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Stringable;
 use Illuminate\Support\Str;
 
@@ -60,6 +62,12 @@ class CartController extends FrontendController
 
     public function checkout($type = null)
     {
+
+        $customer_id = auth()->guard('customer')->id();
+
+        if (!$customer_id) {
+            return redirect()->route('fe.auth.login')->with('error', 'Vui lòng đăng nhập để đặt hàng.');
+        }
         $provinces = $this->provinceRepository->all();
         $customer_id = auth()->guard('customer')->id();
         $carts = Cart::instance('shopping')->content();
@@ -75,10 +83,10 @@ class CartController extends FrontendController
         if ($type != null) {
             if ($type == 2) {
                 $cart_id = ModelsCart::where('customer_id', $customer_id)->first();
-                $carts = CartDetail::with('product', 'product_name')->where('cart_id', $cart_id->ID)->get();
+                $carts = CartDetail::with('product', 'product_name', 'variant')->where('cart_id', $cart_id->ID)->get();
             } else {
                 $cart_id = CartOrders::where('customer_id', $customer_id)->first();
-                $carts = CartOrderDetail::with('product', 'product_name')->where('cart_order_id', $cart_id->id)->get();
+                $carts = CartOrderDetail::with('product', 'product_name', 'variant')->where('cart_order_id', $cart_id->id)->get();
             }
             $convertedItems = [];
             foreach ($carts as $cart) {
@@ -89,8 +97,10 @@ class CartController extends FrontendController
                     'qty' => (string) $cart->quantity,
                     'name' => optional($cart->product_name)->name ?? 'Sản phẩm không tồn tại',
                     'price' => (float) $cart->unit_price,
+                    'attribute' => ($cart->variant)->name,
                     'options' => (object) [],
                     'associatedModel' => null,
+                    'product_variant_id' => $cart->product_variant_id,
                     'taxRate' => 0,
                     'priceOriginal' => (float) $cart->unit_price,
                     'image' => optional($cart->product)->image ?? '',
@@ -115,6 +125,11 @@ class CartController extends FrontendController
 
     public function store(StoreCartRequest $request)
     {
+        $customer_id = auth()->guard('customer')->id();
+
+        if (!$customer_id) {
+            return redirect()->route('fe.auth.login')->with('error', 'Vui lòng đăng nhập để đặt hàng.');
+        }
         $customerID = Auth::guard('customer')->id();
         $request['customer_id'] = $customerID;
         if ($request->type != null) {
@@ -124,6 +139,7 @@ class CartController extends FrontendController
             } else {
                 $cart_id = CartOrders::where('customer_id', $customerID)->first();
                 $carts = CartOrderDetail::with('product', 'product_name')->where('cart_order_id', $cart_id->id)->get();
+                dd($carts);
             }
             $convertedItems = [];
             foreach ($carts as $cart) {
@@ -134,6 +150,8 @@ class CartController extends FrontendController
                     'qty' => (string) $cart->quantity,
                     'name' => optional($cart->product_name)->name ?? 'Sản phẩm không tồn tại',
                     'price' => (float) $cart->unit_price,
+                    'attribute' => ($cart->variant)->name,
+                    'product_variant_id' => $cart->product_variant_id,
                     'options' => (object) [],
                     'associatedModel' => null,
                     'taxRate' => 0,
@@ -143,9 +161,9 @@ class CartController extends FrontendController
                 ];
             }
             $carts = $convertedItems;
+            dd($carts);
             $request->merge(['carts' => $carts]);
         }
-
 
         $system = $this->system;
         $order = $this->cartService->order($request, $system,);
@@ -221,11 +239,18 @@ class CartController extends FrontendController
 
     public function storeCart(Request $request)
     {
+
+        $customer_id = auth()->guard('customer')->id();
+
+        if (!$customer_id) {
+            return redirect()->route('fe.auth.login')->with('error', 'Vui lòng đăng nhập để đặt hàng.');
+        }
+        //dd($request->all());
         $customer_id = auth()->guard('customer')->id();
         $qty = $request->input('qty_cart', 1);
         $unit_price = $request->input('price_cart', 0);
         $product_id = $request->input('id_item');
-        $product_variant_id = null;
+        $product_variant_id = $request->input('variant');
 
         // Kiểm tra giỏ hàng đã tồn tại chưa
         $cart = ModelsCart::where('customer_id', $customer_id)->first();
@@ -263,143 +288,18 @@ class CartController extends FrontendController
 
         return redirect()->back()->with('success', 'Thêm vào giỏ hàng thành công');
     }
-
-
-    public function cart($type = null)
-    {
-        $provinces = $this->provinceRepository->all();
-        $customer_id = auth()->guard('customer')->id();
-
-        if (!$customer_id) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để xem giỏ hàng.');
-        }
-
-        $cartCaculate = $this->cartService->reCaculateCart();
-        $cartPromotion = $this->cartService->cartPromotion($cartCaculate['cartTotal']);
-
-        $seo = [
-            'meta_title' => 'Trang thanh toán đơn hàng',
-            'meta_keyword' => '',
-            'meta_description' => '',
-            'meta_image' => '',
-            'canonical' => write_url('thanh-toan', TRUE, TRUE),
-        ];
-
-        if ($type == 2) {
-            $cart = ModelsCart::where('customer_id', $customer_id)->first();
-
-            if ($cart) {
-                $carts1 = CartDetail::with(['product', 'product_name'])
-                    ->where('cart_id', $cart->ID)
-                    ->get();
-            } else {
-                $carts1 = collect(); // Trả về một collection rỗng để tránh lỗi
-            }
-        } else {
-            $cart = CartOrders::where('customer_id', $customer_id)->first();
-
-            if ($cart) {
-                $carts1 = CartOrderDetail::with(['product', 'product_name'])
-                    ->where('cart_order_id', $cart->id)
-                    ->get();
-            } else {
-                $carts1 = collect(); // Trả về một collection rỗng để tránh lỗi
-            }
-        }
-
-
-        $convertedItems = [];
-
-        foreach ($carts1 as $cartItem) {
-            $rowId = Str::uuid()->toString();
-            $convertedItems[$rowId] = (object) [
-                'rowId' => $rowId,
-                'id' => $cartItem->product_id,
-                'qty' => (string) $cartItem->quantity,
-                'name' => optional($cartItem->product_name)->name ?? 'Sản phẩm không tồn tại',
-                'price' => (float) $cartItem->unit_price,
-                'options' => (object) [],
-                'associatedModel' => null,
-                'taxRate' => 0,
-                'priceOriginal' => (float) $cartItem->unit_price,
-                'image' => optional($cartItem->product)->image ?? '',
-                'cart' => $type,
-            ];
-        }
-        $carts = $convertedItems;
-        $system = $this->system;
-        $config = $this->config();
-        return view('frontend.cart.cart', compact(
-            'config',
-            'seo',
-            'system',
-            'provinces',
-            'carts',
-            'cartPromotion',
-            'cartCaculate',
-            'type',
-        ));
-    }
-
-
-    public function update(Request $request)
-    {
-        $customer_id = auth()->guard('customer')->id();
-        if ($request->type == 2) {
-            $cart = ModelsCart::where('customer_id', $customer_id)->first();
-
-            $change = (int) $request->change;
-            $cartItem = CartDetail::where('cart_id', $cart->ID)
-                ->first();
-        } else {
-            $cart = CartOrders::where('customer_id', $customer_id)->first();
-
-            $change = (int) $request->change;
-            $cartItem = CartOrderDetail::where('cart_order_id', $cart->id)
-                ->first();
-        }
-        if ($cartItem) {
-            $newQty = max(1, $cartItem->quantity + $change);
-            $cartItem->quantity = $newQty;
-            $cartItem->save();
-
-            return redirect()->back()->with('success', 'Cập nhật giỏ hàng thành công!');
-        }
-
-        return redirect()->back()->with('error', 'Không tìm thấy sản phẩm trong giỏ hàng!');
-    }
-
-
-    public function remove(Request $request)
-    {
-        $customer_id = auth()->guard('customer')->id();
-        if ($request->type == 2) {
-            $cart = ModelsCart::where('customer_id', $customer_id)->first();
-            $cartItem = CartDetail::where('cart_id', $cart->ID)
-                ->where('product_id', $request->product_id)
-                ->first();
-        } else {
-            $cart = CartOrders::where('customer_id', $customer_id)->first();
-            $cartItem = CartOrderDetail::where('cart_order_id', $cart->id)
-                ->where('product_id', $request->product_id)
-                ->first();
-        }
-        $cartItem->delete();
-        return redirect()->back();
-    }
-
     public function storeCartOrder(Request $request)
     {
         $customer_id = auth()->guard('customer')->id();
 
         if (!$customer_id) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đặt hàng.');
+            return redirect()->route('fe.auth.login')->with('error', 'Vui lòng đăng nhập để đặt hàng.');
         }
 
         $qty = $request->input('qty_cart', 1);
         $unit_price = $request->input('price_cart', 0);
         $product_id = $request->input('id_item');
-        $product_variant_id = null;
+        $product_variant_id = $request->input('variant');
 
         // Kiểm tra giỏ hàng đã tồn tại chưa
         $cart = CartOrders::where('customer_id', $customer_id)->first();
@@ -432,5 +332,158 @@ class CartController extends FrontendController
         }
 
         return redirect()->back()->with('success', 'Thêm vào giỏ hàng thành công');
+    }
+
+
+    public function cart($type = null)
+    {
+        $provinces = $this->provinceRepository->all();
+        $customer_id = auth()->guard('customer')->id();
+
+        if (!$customer_id) {
+            return redirect()->route('fe.auth.login')->with('error', 'Vui lòng đăng nhập để xem giỏ hàng.');
+        }
+
+        $cartCaculate = $this->cartService->reCaculateCart();
+        $cartPromotion = $this->cartService->cartPromotion($cartCaculate['cartTotal']);
+
+        $seo = [
+            'meta_title' => 'Trang thanh toán đơn hàng',
+            'meta_keyword' => '',
+            'meta_description' => '',
+            'meta_image' => '',
+            'canonical' => write_url('thanh-toan', TRUE, TRUE),
+        ];
+
+        if ($type == 2) {
+            $cart = ModelsCart::where('customer_id', $customer_id)->first();
+
+            if ($cart) {
+                $carts1 = CartDetail::select('cart_details.*', 'product_variant_language.name')
+                    ->join('product_variant_language', 'cart_details.product_variant_id', '=', 'product_variant_language.product_variant_id')
+                    ->where('cart_details.cart_id', $cart->ID)
+                    ->get();
+                // dd($carts1);
+            } else {
+                $carts1 = collect();
+            }
+        } else {
+            $cart = CartOrders::where('customer_id', $customer_id)->first();
+
+            if ($cart) {
+                $carts1 = CartOrderDetail::select('cart_order_details.*', 'product_variant_language.name')
+                    ->join('product_variant_language', 'cart_order_details.product_variant_id', '=', 'product_variant_language.product_variant_id')
+                    ->where('cart_order_details.cart_order_id', $cart->id)
+                    ->get();
+            } else {
+                $carts1 = collect(); // Trả về một collection rỗng để tránh lỗi
+            }
+        }
+
+
+        $convertedItems = [];
+
+        foreach ($carts1 as $cartItem) {
+            $rowId = Str::uuid()->toString();
+            $convertedItems[$rowId] = (object) [
+                'rowId' => $rowId,
+                'id' => $cartItem->product_id,
+                'qty' => (string) $cartItem->quantity,
+                'name' => optional($cartItem->product_name)->name ?? 'Sản phẩm không tồn tại',
+                'price' => (float) $cartItem->unit_price,
+                'attribute' => $cartItem->name,
+                'product_variant_id' => $cartItem->product_variant_id,
+                'options' => (object) [],
+                'associatedModel' => null,
+                'taxRate' => 0,
+                'priceOriginal' => (float) $cartItem->unit_price,
+                'image' => optional($cartItem->product)->image ?? '',
+                'cart' => $type,
+            ];
+        }
+        $carts = $convertedItems;
+        $system = $this->system;
+        $config = $this->config();
+        return view('frontend.cart.cart', compact(
+            'config',
+            'seo',
+            'system',
+            'provinces',
+            'carts',
+            'cartPromotion',
+            'cartCaculate',
+            'type',
+        ));
+    }
+
+
+    public function update2(Request $request)
+    {
+        $customer_id = auth()->guard('customer')->id();
+
+        if ($request->type == 2) {
+            $cart = ModelsCart::where('customer_id', $customer_id)->first();
+            if (!$cart) {
+                return redirect()->back()->with('error', 'Giỏ hàng không tồn tại!');
+            }
+            CartDetail::where('cart_id', $cart->ID)
+                ->where('product_id', $request->product_id)
+                ->where('product_variant_id', $request->product_variant_id)
+                ->update(['quantity' => DB::raw("GREATEST(quantity + {$request->change}, 1)")]);
+        } else {
+            $cart = CartOrders::where('customer_id', $customer_id)->first();
+            if (!$cart) {
+                return redirect()->back()->with('error', 'Giỏ hàng không tồn tại!');
+            }
+            CartOrderDetail::where('cart_order_id', $cart->id)
+                ->where('product_id', $request->product_id)
+                ->where('product_variant_id', $request->product_variant_id)
+                ->update(['quantity' => DB::raw("GREATEST(quantity + {$request->change}, 1)")]);
+        }
+
+        return redirect()->back()->with('success', 'Cập nhật giỏ hàng thành công!');
+    }
+
+
+    public function remove(Request $request)
+    {
+        $customer_id = auth()->guard('customer')->id();
+
+        // Kiểm tra loại giỏ hàng (type)
+        if ($request->type == 2) {
+            // Giỏ hàng thông thường
+            $cart = ModelsCart::where('customer_id', $customer_id)->first();
+            if (!$cart) {
+                return redirect()->back()->with('error', 'Giỏ hàng không tồn tại!');
+            }
+
+            // Sử dụng DB để xóa sản phẩm cụ thể trong giỏ hàng
+            $deleted = DB::table('cart_details')
+                ->where('cart_id', $cart->ID)
+                ->where('product_id', $request->product_id)
+                ->where('product_variant_id', $request->product_variant_id)
+                ->delete();
+        } else {
+            // Giỏ hàng order
+            $cart = CartOrders::where('customer_id', $customer_id)->first();
+            if (!$cart) {
+                return redirect()->back()->with('error', 'Giỏ hàng không tồn tại!');
+            }
+
+            // Sử dụng DB để xóa sản phẩm cụ thể trong giỏ hàng order
+            $deleted = DB::table('cart_order_details')
+                ->where('cart_order_id', $cart->id)
+                ->where('product_id', $request->product_id)
+                ->where('product_variant_id', $request->product_variant_id)
+                ->delete();
+        }
+
+        // Kiểm tra xem có sản phẩm nào bị xóa không
+        if ($deleted) {
+            return redirect()->back()->with('success', 'Xóa sản phẩm khỏi giỏ hàng thành công!');
+        }
+
+        // Nếu không tìm thấy sản phẩm
+        return redirect()->back()->with('error', 'Không tìm thấy sản phẩm trong giỏ hàng!');
     }
 }

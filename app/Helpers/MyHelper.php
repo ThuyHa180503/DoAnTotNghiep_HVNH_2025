@@ -61,14 +61,19 @@ if (!function_exists('image')) {
     }
 }
 
-
 if (!function_exists('convert_price')) {
-    function convert_price(mixed $price = '', $flag = false)
+    function convert_price(mixed $price = '', bool $flag = false): string|int
     {
-        if ($price === null) return 0;
-        return ($flag === false) ? str_replace('.', '', $price) : number_format($price, 0, ',', '.');
+        if (!is_numeric($price) || $price === '' || $price === null) {
+            return 0;
+        }
+
+        $price = (float) $price;
+
+        return $flag ? number_format($price, 0, ',', '.') : (int) str_replace('.', '', (string) $price);
     }
 }
+
 
 if (!function_exists('getPercent')) {
     function getPercent($product = null, $discountValue = 10)
@@ -88,7 +93,8 @@ if (!function_exists('getPromotionPrice')) {
 if (!function_exists('getPrice')) {
     function getPrice($product = null)
     {
-        // $getId=User::
+        //dd($product);
+        //$getId=User::
         $result = [
             'price' => ($product->order_price),
             'priceSale' => 0,
@@ -105,13 +111,13 @@ if (!function_exists('getPrice')) {
             $result['price'] = $result['price'] - ($result['price']) * $percent;
         }
 
-        if ($product->price == 0) {
+        // if ($product->price == 0) {
 
-            $result['html'] .= '<div class="price mt10">';
-            $result['html'] .= '<div class="price-sale">Liên Hệ</div>';
-            $result['html'] .= '</div>';
-            return $result;
-        }
+        //     $result['html'] .= '<div class="price mt10">';
+        //     $result['html'] .= '<div class="price-sale">Liên Hệ</div>';
+        //     $result['html'] .= '</div>';
+        //     return $result;
+        // }
 
         if (isset($product->promotions) && isset($product->promotions->discountType)) {
             $result['percent'] = getPercent($product, $product->promotions->discount);
@@ -120,14 +126,65 @@ if (!function_exists('getPrice')) {
             }
         }
         $result['html'] .= '<div class="price uk-flex uk-flex-middle mt10">';
-        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] > 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'đ</div>';
+        $result['html'] .= '<div class="price-sale">' . (($result['priceSale'] > 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . 'VNĐ</div>';
         if ($result['priceSale'] > 0) {
-            $result['html'] .= '<div class="price-old uk-flex uk-flex-middle">' . convert_price($result['price'], true) . 'đ <div class="percent"><div class="percent-value">-' . $result['percent'] . '%</div></div></div>';
+            $result['html'] .= '<div class="price-old uk-flex uk-flex-middle">' . convert_price($result['price'], true) . 'VNĐ <div class="percent"><div class="percent-value">-' . $result['percent'] . '%</div></div></div>';
         }
         $result['html'] .= '</div>';
         return $result;
     }
 }
+// if (!function_exists('getPrice')) {
+//     function getPrice($product = null)
+//     {
+//         if (!$product) return null; // Tránh lỗi nếu không có sản phẩm
+
+//         $currency = $product->currency ?? 'đ'; // Lấy đơn vị tiền tệ hoặc mặc định là 'đ'
+
+//         $result = [
+//             'price' => $product->order_price,
+//             'priceSale' => 0,
+//             'percent' => 0,
+//             'html' => ''
+//         ];
+
+//         $userId = Auth::guard('customer')->id();
+//         $customer = Customer::with('customer_catalogues')->where('id', $userId)->first();
+//         if ($customer && $customer->customer_catalogues) {
+//             $percent = ($customer->customer_catalogues->percent ?? 0) / 100;
+//             $result['price'] -= $result['price'] * $percent;
+//         }
+
+//         if ($product->price == 0) {
+//             $result['html'] .= '<div class="price mt10">';
+//             $result['html'] .= '<div class="price-sale">Liên Hệ</div>';
+//             $result['html'] .= '</div>';
+//             return $result;
+//         }
+
+//         if (isset($product->promotions) && isset($product->promotions->discountType)) {
+//             $result['percent'] = getPercent($product, $product->promotions->discount);
+//             if ($product->promotions->discountValue > 0) {
+//                 $result['priceSale'] = getPromotionPrice($product->price, $product->promotions->discount);
+//             }
+//         }
+
+//         $result['html'] .= '<div class="price uk-flex uk-flex-middle mt10">';
+//         $result['html'] .= '<div class="price-sale">' .
+//             (($result['priceSale'] > 0) ? convert_price($result['priceSale'], true) : convert_price($result['price'], true)) . ' ' . $currency .
+//             '</div>';
+
+//         if ($result['priceSale'] > 0) {
+//             $result['html'] .= '<div class="price-old uk-flex uk-flex-middle">' .
+//                 convert_price($result['price'], true) . ' ' . $currency .
+//                 ' <div class="percent"><div class="percent-value">-' . $result['percent'] . '%</div></div></div>';
+//         }
+
+//         $result['html'] .= '</div>';
+//         return $result;
+//     }
+// }
+
 
 if (!function_exists('getVariantPrice')) {
     function getVariantPrice($variant, $variantPromotion)

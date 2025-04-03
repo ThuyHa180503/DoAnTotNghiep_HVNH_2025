@@ -26,6 +26,7 @@ class CartController extends FrontendController
 
     public function create(Request $request)
     {
+
         $flag = $this->cartService->create($request, $this->language);
 
         $cart = Cart::instance('shopping')->content();

@@ -35,4 +35,8 @@ class CartOrderDetail extends Model
     {
         return $this->belongsTo(Product_language::class, 'product_id', 'product_id');
     }
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariantLanguage::class, 'product_variant_id');
+    }
 }

@@ -21,7 +21,7 @@
                 <div class="header-toolbox">
                     <div class="uk-flex uk-flex-middle">
                         <div class="header-cart12">
-                            <div class="cart-mini12">
+                            <div class="cart-mini12" style="margin-right: 15px;">
                                 <svg width="15" height="15" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g>
                                         <path d="M24.4941 3.36652H4.73614L4.69414 3.01552C4.60819 2.28593 4.25753 1.61325 3.70863 1.12499C3.15974 0.636739 2.45077 0.366858 1.71614 0.366516L0.494141 0.366516V2.36652H1.71614C1.96107 2.36655 2.19748 2.45647 2.38051 2.61923C2.56355 2.78199 2.68048 3.00626 2.70914 3.24952L4.29414 16.7175C4.38009 17.4471 4.73076 18.1198 5.27965 18.608C5.82855 19.0963 6.53751 19.3662 7.27214 19.3665H20.4941V17.3665H7.27214C7.02705 17.3665 6.79052 17.2764 6.60747 17.1134C6.42441 16.9505 6.30757 16.7259 6.27914 16.4825L6.14814 15.3665H22.3301L24.4941 3.36652ZM20.6581 13.3665H5.91314L4.97214 5.36652H22.1011L20.6581 13.3665Z" fill="#FFFFFF"></path>
@@ -30,7 +30,8 @@
                                     </g>
                                 </svg>
                                 <a class="cart-link12">
-                                    <img src="frontend/resources/img/shopping-cart.png" alt="cart image" class="cart-icon">
+                                    <!-- <img src="frontend/resources/img/shopping-cart.png" alt="cart image" class="cart-icon"> -->
+                                    <i class='bx bx-cart-alt' style="width: 25px;  height: 25px;  vertical-align: middle; font-size: large; color: #2E0100;"></i>
                                     <span class="cart-count12">
                                         {{ isset($carts) && is_array($carts) ? collect($carts)->sum('qty') : 0 }}
                                     </span>
@@ -63,20 +64,12 @@
                                     text-decoration: none;
                                 }
 
-                                .cart-icon {
-                                    width: 25px;
-                                    /* Giảm kích thước ảnh */
-                                    height: 25px;
-                                    vertical-align: middle;
-                                    /* Căn giữa với SVG */
-                                }
-
                                 .cart-count12 {
                                     position: absolute;
                                     top: -8px;
                                     /* Điều chỉnh vị trí cho icon nhỏ hơn */
                                     right: -8px;
-                                    background-color: #ff6600;
+                                    background-color: #7A95A1;
                                     color: #fff;
                                     border-radius: 50%;
                                     width: 15px;
@@ -117,7 +110,7 @@
                                 }
 
                                 .cart-text12:hover {
-                                    color: #ff6600;
+                                    color: #7A95A1;
                                 }
 
                                 /* Hiển thị cart-list12 khi hover vào cart-mini12 */
@@ -132,6 +125,8 @@
                         <div class="header-cart">
                             <div class="uk-flex uk-flex-middle">
                                 <a href="{{ route('customer.profile') }}" class="cart-text">
+                                <i class='bx bx-user' style="width: 25px;  height: 25px;  vertical-align: middle; font-size: large; color: #2E0100;"></i>
+
                                     {{ auth()->guard('customer')->user()->name }} -
                                 </a>
                                 <a style="color: red;" href="{{ route('customer.logout') }}" class="cart-text"> [Đăng xuất]</a>
@@ -141,8 +136,9 @@
                         @else
                         <div class="">
                             <div class="uk-flex uk-flex-middle">
-                                <a style="color: #000;font-weight: 700;"
-                                    href="{{ route('fe.auth.login') }}" class="cart-text">Đăng nhập</a>
+                                <a style="color: #000;font-weight: 700;"  href="{{ route('fe.auth.login') }}" class="cart-text">
+                                    <i class='bx bx-user' style="width: 25px;  height: 25px;  vertical-align: middle; font-size: large; color: #2E0100;"></i>
+                                    Đăng nhập</a>
                             </div>
                         </div>
 

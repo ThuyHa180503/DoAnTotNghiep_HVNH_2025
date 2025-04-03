@@ -2,9 +2,9 @@
     <thead>
         <tr>
             <th>{{ __('Tên nhóm giá') }}</th>
-            <th>{{ __('Tỷ giá hối đoái') }}</th>
+            <th>{{ __('Chiết khấu') }}</th>
             <th>{{ __('Phí vận chuyển') }}</th>
-            <th>Thời gian cập nhật mới nhất</th>
+            <th>Thời gian cập nhật</th>
             <th class="text-center" style="width:100px;">{{ __('Hành động') }}</th>
         </tr>
     </thead>

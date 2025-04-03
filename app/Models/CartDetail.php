@@ -9,8 +9,8 @@ class CartDetail extends Model
 {
     use HasFactory;
 
-    protected $table = "cart_details"; 
-    protected $fillable = ['cart_id', 'product_id', 'product_variant_id', 'unit_price', 'quantity']; 
+    protected $table = "cart_details";
+    protected $fillable = ['cart_id', 'product_id', 'product_variant_id', 'unit_price', 'quantity'];
     protected $primaryKey = 'cart_id'; // Nếu khóa chính là cart_id
     public $incrementing = false;
     protected $keyType = 'int';
@@ -25,13 +25,12 @@ class CartDetail extends Model
     }
     public function product_name()
     {
-        return $this->belongsTo(Product_language::class,'product_id','product_id');
-
+        return $this->belongsTo(Product_language::class, 'product_id', 'product_id');
     }
-    
+
 
     public function variant()
     {
-        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
+        return $this->belongsTo(ProductVariantLanguage::class, 'product_variant_id');
     }
 }

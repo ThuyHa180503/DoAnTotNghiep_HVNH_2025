@@ -228,9 +228,6 @@ class ProductService extends BaseService implements ProductServiceInterface
     {
         $payload = $request->only(['variant', 'productVariant', 'attribute']);
 
-        // Gán giá trị 10 cho quantity trong mảng variant
-        $payload['variant']['quantity'][0] = 10;
-        
         $variant = $this->createVariantArray($payload, $product);
 
 
@@ -370,8 +367,8 @@ class ProductService extends BaseService implements ProductServiceInterface
             'products.id',
             'products.publish',
             'products.image',
-            'products.order',
-            'products.price',
+            'products.allow_order',
+            'products.order_price',
             'tb2.name',
             'tb2.canonical',
         ];

@@ -44,7 +44,6 @@ class ProductController extends FrontendController
 
     public function index($id, $request)
     {
-
         $language = $this->language;
         $product = $this->productRepository->getProductById($id, $this->language, config('apps.general.defaultPublish'));
         if (is_null($product)) {
@@ -99,7 +98,6 @@ class ProductController extends FrontendController
         $config = $this->config();
         $system = $this->system;
         $seo = seo($product);
-
         return view('frontend.product.product.index', compact(
             'config',
             'seo',

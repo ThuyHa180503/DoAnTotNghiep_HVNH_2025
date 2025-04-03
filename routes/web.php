@@ -131,7 +131,9 @@ Route::group(['middleware'], function () {
       Route::post('customer/register-custumer' . config('apps.general.suffix'), [FeCustomerController::class, 'registerCustomer2'])->name('customer.registerCustomer2');
 
 
-      Route::get('customer/create' . config('apps.general.suffix'), [FeCustomerController::class, 'createCustomer'])->name('customer.createCustomer');
+      Route::get('customer/create' . config('apps.general.suffix'), [FeCustomerController::class, 'createCustomer'])->name('customer.customer123');
+      Route::get('customer/customer' . config('apps.general.suffix'), [FeCustomerController::class, 'customer'])->name('customer.createCustomer');
+
       Route::post('/wallet/store' . config('apps.general.suffix'), [FeCustomerController::class, 'store'])->name('customer.store123');
 
       Route::post('/wallet/update-bank' . config('apps.general.suffix'), [FeCustomerController::class, 'updateBankAccount'])->name('wallet.updateBank');
@@ -163,7 +165,7 @@ Route::group(['middleware'], function () {
    Route::post('cart/create', [CartController::class, 'store'])->name('cart.store');
 
    Route::post('cart/update', [CartController::class, 'update'])->name('cart.update');
-   Route::post('cart/update', [CartController::class, 'update'])->name('cart.update_1');
+   Route::post('cart/update', [CartController::class, 'update2'])->name('cart.update_1');
 
    Route::post('cart/romve', [CartController::class, 'remove'])->name('cart.remove');
 
@@ -240,9 +242,6 @@ Route::group(['middleware'], function () {
    Route::post('ajax/cart/create', [AjaxCartController::class, 'create'])->name('ajax.cart.create');
    Route::post('ajax/cart/update', [AjaxCartController::class, 'update'])->name('ajax.cart.update');
    Route::post('ajax/cart/delete', [AjaxCartController::class, 'delete'])->name('ajax.cart.delete');
-
-
-
 
    Route::get('ajax/dashboard/findModelObject', [AjaxDashboardController::class, 'findModelObject'])->name('ajax.dashboard.findModelObject');
    /* BACKEND ROUTES */
@@ -491,11 +490,17 @@ Route::group(['middleware'], function () {
       });
 
       Route::group(['prefix' => 'price_range'], function () {
+
          Route::get('index', [PriceRangeController::class, 'index'])->name('price_range.index');
          Route::get('create', [PriceRangeController::class, 'create'])->name('price_range.create');
          Route::post('store', [PriceRangeController::class, 'store'])->name('price_range.store');
          Route::get('{id}/edit', [PriceRangeController::class, 'edit'])->where(['id' => '[0-9]+'])->name('price_range.edit');
+
+         Route::get('{sub_name}/edit2', [PriceRangeController::class, 'edi_sub_price_range'])->where(['id' => '[0-9]+'])->name('sub_price_range.edit');
+
          Route::put('{id}/update', [PriceRangeController::class, 'update'])->where(['id' => '[0-9]+'])->name('price_range.update');
+         Route::put('{id}/update', [PriceRangeController::class, 'update2'])->where(['id' => '[0-9]+'])->name('price_range.update2');
+
          Route::delete('{id}/destroy', [PriceRangeController::class, 'destroy'])->where(['id' => '[0-9]+'])->name('price_range.destroy');
       });
 

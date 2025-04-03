@@ -171,6 +171,9 @@ class ProductController extends Controller
         $request->merge([
             'change_discount' => $request->change_discount ?? 1
         ]);
+        // $data = $request->all();
+        // $data['variant']['price'][0] = $data['order_price'];
+        // $request->merge($data);
         //dd($request->all());
         if ($this->productService->create($request, $this->language)) {
             return redirect()->route('product.index')->with('success', 'Thêm mới bản ghi thành công');

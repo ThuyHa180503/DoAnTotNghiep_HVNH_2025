@@ -36,7 +36,6 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
                 'products.code',
                 'products.made_in',
                 'products.allow_order',
-
                 'products.order_price',
                 'products.made_in',
                 'products.attributeCatalogue',
@@ -120,6 +119,7 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             [
                 'products.id',
                 'products.product_catalogue_id',
+                'products.image',
                 'products.image',
                 'products.icon',
                 'products.album',

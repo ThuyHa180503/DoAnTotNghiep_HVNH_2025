@@ -1,6 +1,8 @@
 <?php
 
+
 namespace App\Http\Controllers\Backend\Price;
+
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -18,6 +20,7 @@ use App\Models\ProductCatalogue;
 use App\Models\Sub_brand;
 use Illuminate\Support\Facades\DB;
 
+
 class PriceGroupController extends Controller
 {
     /**
@@ -29,9 +32,11 @@ class PriceGroupController extends Controller
     protected $language;
     protected $attributeCatalogue;
 
+
     public function __construct(
         AttributeCatalogueService $attributeCatalogueService,
         AttributeCatalogueRepository $attributeCatalogueRepository,
+
 
         AttributeCatalogueRepository $attributeCatalogue,
     ) {
@@ -44,10 +49,13 @@ class PriceGroupController extends Controller
         });
 
 
+
+
         $this->attributeCatalogueService = $attributeCatalogueService;
         $this->attributeCatalogueRepository = $attributeCatalogueRepository;;
         $this->attributeCatalogue = $attributeCatalogue;
     }
+
 
     private function initialize()
     {
@@ -62,11 +70,14 @@ class PriceGroupController extends Controller
         $perPage = $request->perpage ?? 20;
         $keyword = $request->keyword ?? null;
 
+
         $query = Price_group::query();
+
 
         if (request()->has('publish')) {
             $query->where('publish', request('publish'));
         }
+
 
         if (!empty(request('keyword'))) {
             $query->where('name', 'LIKE', '%' . request('keyword') . '%');
@@ -92,6 +103,7 @@ class PriceGroupController extends Controller
         ));
     }
 
+
     public function create()
     {
         $config = [
@@ -109,6 +121,7 @@ class PriceGroupController extends Controller
         $config['method'] = 'create';
         $dropdown  = $this->nestedset->Dropdown();
 
+
         $categorys = ProductCatalogue::with('product_catalogue_language')->get();
         $brands = ProductBrand::select(
             'product_brands.*',
@@ -117,7 +130,9 @@ class PriceGroupController extends Controller
             ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
             ->get();
 
+
         $sub_brands = Sub_brand::all();
+
 
         $template = 'backend.price.group.store';
         return view('backend.dashboard.layout', compact(
@@ -132,6 +147,9 @@ class PriceGroupController extends Controller
 
 
 
+
+
+
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -139,14 +157,18 @@ class PriceGroupController extends Controller
             'shipping' => 'required|numeric|min:0',
             'exchange_rate' => 'required|numeric|min:0',
 
+
             'product_brand_id' => 'required|array',
             'product_brand_id.*' => 'integer|exists:product_brands,id',
+
 
             'sub_brand_id' => 'nullable|array',
             'sub_brand_id.*' => 'integer|exists:sub_brands,id',
 
+
             'product_catalogue_id' => 'required|array',
             'product_catalogue_id.*' => 'exists:product_catalogues,id',
+
 
             'discount' => 'nullable|array',
             'discount.*' => 'array',
@@ -157,26 +179,32 @@ class PriceGroupController extends Controller
             'name.unique' => 'Tên nhóm giá đã tồn tại, vui lòng chọn tên khác.',
             'name.max' => 'Tên nhóm giá không được vượt quá 255 ký tự.',
 
+
             'shipping.required' => 'Phí vận chuyển không được để trống.',
             'shipping.numeric' => 'Phí vận chuyển phải là số.',
             'shipping.min' => 'Phí vận chuyển không được nhỏ hơn 0.',
 
+
             'exchange_rate.required' => 'Tỷ giá không được để trống.',
             'exchange_rate.numeric' => 'Tỷ giá phải là số.',
             'exchange_rate.min' => 'Tỷ giá không được nhỏ hơn 0.',
+
 
             'product_brand_id.required' => 'Thương hiệu sản phẩm là bắt buộc.',
             'product_brand_id.array' => 'Thương hiệu sản phẩm phải là mảng.',
             'product_brand_id.*.integer' => 'Mã thương hiệu sản phẩm phải là số nguyên.',
             'product_brand_id.*.exists' => 'Thương hiệu sản phẩm không hợp lệ.',
 
+
             'sub_brand_id.array' => 'Thương hiệu phụ phải là mảng.',
             'sub_brand_id.*.integer' => 'Mã thương hiệu phụ phải là số nguyên.',
             'sub_brand_id.*.exists' => 'Thương hiệu phụ không hợp lệ.',
 
+
             'product_catalogue_id.required' => 'Danh mục sản phẩm là bắt buộc.',
             'product_catalogue_id.array' => 'Danh mục sản phẩm phải là mảng.',
             'product_catalogue_id.*.exists' => 'Danh mục sản phẩm không hợp lệ.',
+
 
             'discount.array' => 'Danh sách giảm giá phải là mảng.',
             'discount.*.array' => 'Mỗi giá trị trong giảm giá phải là mảng.',
@@ -184,7 +212,9 @@ class PriceGroupController extends Controller
             'discount.*.*.min' => 'Mức giảm giá không được nhỏ hơn 0.',
         ]);
 
+
         $user_id = auth()->check() ? auth()->user()->id : null;
+
 
         // Dữ liệu cho price_group
         $priceGroupData = [
@@ -195,10 +225,14 @@ class PriceGroupController extends Controller
         ];
 
 
+
+
         $priceGroup = Price_group::create($priceGroupData);
+
 
         $priceGroupDetails = [];
         $data = $request->all();
+
 
         foreach ($data['product_catalogue_id'] as $index => $catalogueIds) {
             foreach ($catalogueIds as $key => $catalogueId) {
@@ -218,9 +252,12 @@ class PriceGroupController extends Controller
             Price_group_deatil::insert($priceGroupDetails);
         }
 
+
         // Trả về thông báo thành công
         return redirect()->route('price_group.index')->with('success', 'Thêm mới bản ghi thành công');
     }
+
+
 
 
     /**
@@ -231,10 +268,12 @@ class PriceGroupController extends Controller
         // Lấy thông tin price_group cùng với các details
         $price_group = Price_group::with('details')->findOrFail($id);
 
+
         // Nhóm details theo product_brand_id và sub_brand_id
         $groupedDetails = $price_group->details->groupBy(function ($detail) {
             return $detail->product_brand_id . '-' . $detail->sub_brand_id;
         });
+
 
         // Lấy danh sách brands và sub_brands
         $brands = ProductBrand::select(
@@ -244,8 +283,10 @@ class PriceGroupController extends Controller
             ->leftJoin('product_brand_language', 'product_brands.id', '=', 'product_brand_language.product_brand_id')
             ->get();
 
+
         $sub_brands = Sub_brand::all(); // Giả định bảng sub_brands và model SubBrand
         $categorys = ProductCatalogue::with('product_catalogue_language')->get();
+
 
         $config = [
             'js' => [
@@ -262,6 +303,7 @@ class PriceGroupController extends Controller
         $config['method'] = 'edit';
         $dropdown = $this->nestedset->Dropdown();
 
+
         $template = 'backend.price.group.edit';
         return view('backend.dashboard.layout', compact(
             'template',
@@ -275,11 +317,13 @@ class PriceGroupController extends Controller
         ));
     }
 
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
+        //dd($request->all());
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'shipping' => 'required|numeric|min:0',
@@ -296,7 +340,9 @@ class PriceGroupController extends Controller
             'discount.*.*' => 'nullable|numeric|min:0',
         ]);
 
+
         $user_id = auth()->check() ? auth()->user()->id : null;
+
 
         // **Tìm và cập nhật price_group**
         $priceGroup = Price_group::findOrFail($id);
@@ -310,40 +356,51 @@ class PriceGroupController extends Controller
         ]);
         unset($priceGroupData['created_at'], $priceGroupData['updated_at']);
 
+
         // **Lưu bản ghi vào price_group_history**
-        $priceGroupHistory = Price_group_history::updateOrCreate(
-            ['price_group_id' => $priceGroup->id],
+        $priceGroupHistory = Price_group_history::Create(
             array_merge($priceGroupData, ['user_id' => $priceGroup->user_id, 'price_group_id' => $priceGroup->id])
         );
+
 
         // **Lưu chi tiết lịch sử vào price_group_history_detail**
         $oldDetails = Price_group_deatil::where('price_group_id', $id)->get();
         $historyDetails = [];
 
+
         foreach ($oldDetails as $detail) {
             $detailData = $detail->toArray();
             unset($detailData['created_at'], $detailData['updated_at'], $detailData['deleted_at'], $detailData['id']);
+
 
             $historyDetails[] = array_merge($detailData, [
                 "user_id" => $user_id,
                 'updated_at' => now()
             ]);
         }
+       
         //dd($historyDetails);
+
 
         if (!empty($historyDetails)) {
             Price_group_history_deatil::insert($historyDetails);
         }
 
+
         // **Xóa dữ liệu cũ trong price_group_detail**
         Price_group_deatil::where('price_group_id', $id)->delete();
 
+
         // **Thêm dữ liệu mới vào price_group_detail**
+         //dd($request->all());
+       
+        $subBrandId = $request->sub_brand_id[0] ?? null;
+        $productBrandId = $request->product_brand_id[0] ?? null;
         $priceGroupDetails = [];
         foreach ($request->product_catalogue_id as $key => $catalogueIds) {
             $ids = explode('-', $key);
-            $productBrandId = $ids[0] ?? null;
-            $subBrandId = $ids[1] ?? null;
+           
+
 
             foreach ($catalogueIds as $index => $catalogueId) {
                 if (!empty($request->discount[$key][$index])) {
@@ -360,13 +417,17 @@ class PriceGroupController extends Controller
                 }
             }
         }
-
+        //dd($priceGroupDetails);
         if (!empty($priceGroupDetails)) {
             Price_group_deatil::insert($priceGroupDetails);
         }
 
+
         return redirect()->route('price_group.index')->with('success', 'Sửa bản ghi thành công');
     }
+
+
+
 
 
 
@@ -381,3 +442,8 @@ class PriceGroupController extends Controller
         return back()->with('error', 'Xoá bản ghi thất bại');
     }
 }
+
+
+
+
+

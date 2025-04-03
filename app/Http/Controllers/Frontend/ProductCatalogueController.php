@@ -46,29 +46,37 @@ class ProductCatalogueController extends FrontendController
 
         $breadcrumb = $this->productCatalogueRepository->breadcrumb($productCatalogue, $this->language);
 
-        $products = $this->productService->paginate(
-            $request,
-            $this->language,
-            $productCatalogue,
-            $page,
-            ['path' => $productCatalogue->canonical],
-        );
+        if (is_null($productCatalogue)) {
+            $products = $this->productService->paginate(
+                $request,
+                $this->language,
+                $productCatalogue,
+                $page,
+                ['path' => $productCatalogue->canonical],
+            );
 
-        $productId = $products->pluck('id')->toArray();
+            $productId = $products->pluck('id')->toArray();
 
-        if (count($productId) && !is_null($productId)) {
-            $products = $this->productService->combineProductAndPromotion($productId, $products);
+            if (count($productId) && !is_null($productId)) {
+                $products = $this->productService->combineProductAndPromotion($productId, $products);
+            }
+        } else {
+            $products = $this->productRepository->search('', $this->language); // No get() needed
+            $productId = $products->pluck('id')->toArray();
+            if (!empty($productId)) {
+                $products = $this->productService->combineProductAndPromotion($productId, $products);
+            }
         }
 
 
         $widgets = $this->widgetService->getWidget([
             ['keyword' => 'products-hl', 'promotion' => true],
         ], $this->language);
-
+        //dd($widgets);
         $config = $this->config();
         $system = $this->system;
         $seo = seo($productCatalogue, $page);
-
+        //dd($widgets);
         return view('frontend.product.catalogue.index', compact(
             'config',
             'seo',
@@ -78,6 +86,34 @@ class ProductCatalogueController extends FrontendController
             'products',
             'filters',
             'widgets',
+        ));
+    }
+
+    public function search(Request $request)
+    {
+
+        $products = $this->productRepository->search($request->input('keyword'), $this->language);
+
+        $productId = $products->pluck('id')->toArray();
+        if (count($productId) && !is_null($productId)) {
+            $products = $this->productService->combineProductAndPromotion($productId, $products);
+        }
+
+
+        $config = $this->config();
+        $system = $this->system;
+        $seo = [
+            'meta_title' => 'Tìm kiếm cho từ khóa: ' . $request->input('keyword'),
+            'meta_keyword' => '',
+            'meta_description' => '',
+            'meta_image' => '',
+            'canonical' => write_url('tim-kiem')
+        ];
+        return view('frontend.product.catalogue.search', compact(
+            'config',
+            'seo',
+            'system',
+            'products',
         ));
     }
 
@@ -108,32 +144,7 @@ class ProductCatalogueController extends FrontendController
     }
 
 
-    public function search(Request $request)
-    {
 
-        $products = $this->productRepository->search($request->input('keyword'), $this->language);
-
-        $productId = $products->pluck('id')->toArray();
-        if (count($productId) && !is_null($productId)) {
-            $products = $this->productService->combineProductAndPromotion($productId, $products);
-        }
-
-        $config = $this->config();
-        $system = $this->system;
-        $seo = [
-            'meta_title' => 'Tìm kiếm cho từ khóa: ' . $request->input('keyword'),
-            'meta_keyword' => '',
-            'meta_description' => '',
-            'meta_image' => '',
-            'canonical' => write_url('tim-kiem')
-        ];
-        return view('frontend.product.catalogue.search', compact(
-            'config',
-            'seo',
-            'system',
-            'products',
-        ));
-    }
 
     public function wishlist(Request $request)
     {

@@ -98,9 +98,9 @@
         <!-- Right Section: Brand Introduction -->
         <div class="brand-intro">
             <div class="content-wrapper" style="position: relative;
-    z-index: 1;
-    max-width: 80%;
-    margin-left: auto;">
+                    z-index: 1;
+                    max-width: 80%;
+                    margin-left: auto;">
                 <h2 class="brand-name">A'NISTA</h2>
                 <p class="brand-description" style="margin-left: auto;">
                     Anista là một thương hiệu có doanh số đứng đầu với các thương
