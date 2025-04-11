@@ -490,7 +490,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         transform: scale(1);
     }
 }
-
 @keyframes bounceIn {
     0% {
         opacity: 0;
@@ -498,14 +497,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         -ms-transform: scale(.3);
         transform: scale(.3);
     }
-
     50% {
         opacity: 1;
         -webkit-transform: scale(1.05);
         -ms-transform: scale(1.05);
         transform: scale(1.05);
     }
-
     70% {
         -webkit-transform: scale(.9);
         -ms-transform: scale(.9);
@@ -524,7 +521,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     -webkit-animation-name: bounceIn;
     animation-name: bounceIn;
 }
-
 @-webkit-keyframes bounceInDown {
     0% {
         opacity: 0;
