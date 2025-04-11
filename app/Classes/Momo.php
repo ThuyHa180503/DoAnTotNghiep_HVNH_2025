@@ -1,8 +1,6 @@
 <?php
 namespace App\Classes;
-
 class Momo{
-
     public function __construct(){
 
     }
@@ -44,8 +42,6 @@ class Momo{
             'requestType' => $requestType,
             'signature' => $signature
         );
-
-
         $result = execPostRequest($endpoint, json_encode($data));
         $jsonResult = json_decode($result,true);  
 
@@ -54,7 +50,5 @@ class Momo{
         $jsonResult['url'] = $jsonResult['payUrl'];
         return $jsonResult;
 
-    }
-    
-	
+    }	
 }
