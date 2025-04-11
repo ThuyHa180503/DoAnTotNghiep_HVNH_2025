@@ -1,66 +1,53 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🛍️ Hệ Thống Bán Hàng Thương Mại Điện Tử A’nista
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 🎯 Giới thiệu
 
-## About Laravel
+**A’nista** là một hệ thống thương mại điện tử được xây dựng dành riêng cho công ty **TNHH Ausun Holding**, nhằm tối ưu hóa hoạt động bán hàng, hỗ trợ cộng tác viên và nhân viên trong quy trình quản lý sản phẩm, đơn hàng, khách hàng, cũng như phân tích hiệu suất kinh doanh.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Hệ thống giúp kết nối hiệu quả giữa các phòng ban như Marketing, Chăm sóc khách hàng, Đơn hàng, Sản phẩm và Ban lãnh đạo thông qua một nền tảng số tiện lợi, dễ sử dụng và chuyên nghiệp.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🧩 Tính năng chính
 
-## Learning Laravel
+- **Hiển thị & phân loại sản phẩm:** Giao diện trực quan, dễ tìm kiếm, giá cả được cập nhật chính xác và liên tục.
+- **Quản lý khách hàng & cộng tác viên:** Phân loại rõ ràng giữa khách lẻ và CTV, áp dụng chính sách và ưu đãi phù hợp.
+- **Đặt hàng dễ dàng:** Hỗ trợ đặt hàng nhanh cho cả cộng tác viên và nhân viên.
+- **Theo dõi đơn hàng & thông báo kịp thời:** Trạng thái đơn hàng được cập nhật theo thời gian thực.
+- **Hệ thống báo cáo thông minh:** Tạo báo cáo bán hàng, doanh thu, hoạt động cộng tác viên để hỗ trợ ra quyết định.
+- **Tối ưu quy trình vận hành nội bộ:** Giảm bớt thủ công, tăng hiệu suất làm việc.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 👩‍💻 Nhóm phát triển
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Dự án được thực hiện bởi nhóm sinh viên với sự phối hợp chặt chẽ và tinh thần trách nhiệm cao:
 
-## Laravel Sponsors
+- **Nguyễn Thúy Hà**  
+- **Đặng Thùy Dương**  
+- **Nguyễn Thùy Linh**
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+---
 
-### Premium Partners
+## 🚀 Mục tiêu triển khai
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+- Nâng cao hiệu quả làm việc nội bộ tại A’nista.
+- Tăng trải nghiệm người dùng cho cộng tác viên và khách hàng.
+- Chuẩn hóa quy trình bán hàng – từ khâu giới thiệu sản phẩm đến hậu mãi.
+- Tạo tiền đề để phát triển nền tảng thương mại điện tử riêng trong tương lai.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 🔗 Tài liệu liên quan
 
-## Code of Conduct
+- [Khảo sát nhu cầu người dùng (Google Form)](https://...)  
+- [Thiết kế giao diện người dùng (Figma)](https://...)  
+- [Tài liệu phân tích yêu cầu nghiệp vụ (BRD)](https://...)  
+- [Demo hệ thống (Link demo)](https://...)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 📬 Liên hệ
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+> Mọi ý kiến đóng góp và phản hồi xin gửi về email nhóm: `anista.team@ausunholding.vn`
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
