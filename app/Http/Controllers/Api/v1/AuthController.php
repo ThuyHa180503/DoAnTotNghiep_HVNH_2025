@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
@@ -7,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
-
 
 class AuthController extends Controller
 {
